@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>1. Fundamentals</title>
+    <script type="module" defer src="./index.ts"></script>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script id="vertex-shader-2d" type="notjs">
+      attribute vec4 a_position;
+
+      void main(){
+          gl_Position = a_position;
+      }
+    </script>
+    <script id="fragment-shader-2d" type="notjs">
+      precision mediump float;
+
+      void main(){
+          gl_FragColor = vec4(1, 0, 0.5, 1);
+      }
+    </script>
+  </body>
+</html>
