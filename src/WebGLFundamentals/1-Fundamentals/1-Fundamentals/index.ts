@@ -56,6 +56,14 @@ if (gl === null) {
 gl.clearColor(0, 0, 0, 0);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
+let { clientWidth, clientHeight } = gl.canvas;
+const pixelRatio = Math.min(window.devicePixelRatio, 2);
+clientHeight = (clientHeight * pixelRatio) | 0;
+clientWidth = (clientWidth * pixelRatio) | 0;
+gl.canvas.width = clientWidth;
+gl.canvas.height = clientHeight;
+gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
 const vertexShaderSource = (
   document.getElementById("vertex-shader-2d") as HTMLScriptElement
 ).text;
@@ -80,19 +88,20 @@ gl.useProgram(program);
 const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
 gl.enableVertexAttribArray(positionAttributeLocation);
 
-let { clientWidth, clientHeight } = gl.canvas;
-const pixelRatio = Math.min(window.devicePixelRatio, 2);
-clientHeight = (clientHeight * pixelRatio) | 0;
-clientWidth = (clientWidth * pixelRatio) | 0;
-gl.canvas.width = clientWidth;
-gl.canvas.height = clientHeight;
-gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+const resolutionUniformLocation = gl.getUniformLocation(
+  program,
+  "u_resolution"
+);
+
+// set the resolution
+gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
 const positionBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
 // three 2d points
-const positions = [0, 0, 0, 0.5, 0.7, 0];
+// const positions = [0, 0, 0, 0.5, 0.7, 0];
+const positions = [10, 20, 80, 20, 10, 30, 10, 30, 80, 20, 80, 30];
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
 const size = 2;
@@ -112,5 +121,5 @@ gl.vertexAttribPointer(
 // draw
 const primitiveType = gl.TRIANGLES;
 offset = 0;
-const count = 3;
+const count = 6;
 gl.drawArrays(primitiveType, offset, count);
