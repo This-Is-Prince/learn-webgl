@@ -261,9 +261,9 @@ gl.useProgram(program);
 
 // location of attribute we created in vertex shader
 const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
-gl.enableVertexAttribArray(positionAttributeLocation);
 const positionBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+gl.enableVertexAttribArray(positionAttributeLocation);
 
 // location of uniform we created in vertex shader
 const resolutionUniformLocation = gl.getUniformLocation(
@@ -338,4 +338,5 @@ const setRectangle: SetRectangleFunType = (gl, x, y, width, height) => {
   );
 };
 
+drawRectangles(50);
 drawRectangles(50);
