@@ -85,9 +85,6 @@ const fragmentShader = createShader(
 const program = createProgram(gl, vertexShader, fragmentShader) as WebGLProgram;
 gl.useProgram(program);
 
-const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
-gl.enableVertexAttribArray(positionAttributeLocation);
-
 const resolutionUniformLocation = gl.getUniformLocation(
   program,
   "u_resolution"
@@ -96,13 +93,11 @@ const resolutionUniformLocation = gl.getUniformLocation(
 // set the resolution
 gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
+const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+gl.enableVertexAttribArray(positionAttributeLocation);
+
 const positionBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-// three 2d points
-// const positions = [0, 0, 0, 0.5, 0.7, 0];
-const positions = [10, 20, 80, 20, 10, 30, 10, 30, 80, 20, 80, 30];
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
 const size = 2;
 const type = gl.FLOAT;
@@ -118,8 +113,52 @@ gl.vertexAttribPointer(
   offset
 );
 
-// draw
-const primitiveType = gl.TRIANGLES;
-offset = 0;
-const count = 6;
-gl.drawArrays(primitiveType, offset, count);
+const colorUniformLocation = gl.getUniformLocation(program, "u_color");
+
+// Returns a random integer from 0 to (range - 1);
+const randomInt = (range: number) => {
+  return Math.floor(Math.random() * range);
+};
+
+const drawRectangles = (howMuch: number) => {
+  // Draw 50 random rectangles in random colors
+  for (let i = 0; i < howMuch; i++) {
+    setRectangle(
+      gl,
+      randomInt(300),
+      randomInt(300),
+      randomInt(300),
+      randomInt(300)
+    );
+
+    gl.uniform4f(
+      colorUniformLocation,
+      Math.random(),
+      Math.random(),
+      Math.random(),
+      1
+    );
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
+};
+
+// Fills the buffer with the values that define a rectangle.
+const setRectangle = (
+  gl: WebGLRenderingContext,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) => {
+  const x1 = x;
+  const x2 = x + width;
+  const y1 = y;
+  const y2 = y + height;
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2]),
+    gl.STATIC_DRAW
+  );
+};
+drawRectangles(50);
