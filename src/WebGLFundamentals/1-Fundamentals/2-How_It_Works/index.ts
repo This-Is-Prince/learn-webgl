@@ -81,7 +81,7 @@ const createProgram: CreateProgramFunType = (
 const setGeometry = (gl: WebGLRenderingContext) => {
   gl.bufferData(
     gl.ARRAY_BUFFER,
-    new Float32Array([0, -100, 150, 125, -175, 100]),
+    new Float32Array([0, 0, 0, 200, 200, 200]),
     gl.STATIC_DRAW
   );
 };
@@ -109,9 +109,9 @@ gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 setGeometry(gl);
 
 const matrixLocation = gl.getUniformLocation(program, "u_matrix");
-const translation = [200, 150];
-const angleInRadians = 0;
-const scale = [1, 1];
+const translation = [300, 300];
+const angleInRadians = Math.PI * 0.1;
+const scale = [0.5, 1];
 let matrix = m3.projection(clientWidth, clientHeight);
 matrix = m3.translate(matrix, translation[0], translation[1]);
 matrix = m3.rotate(matrix, angleInRadians);
