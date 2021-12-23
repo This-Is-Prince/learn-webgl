@@ -105,6 +105,57 @@ const setRectangle: SetRectangleFunType = (gl, x, y, width, height) => {
 };
 
 /**
+ * Set Geometry
+ */
+type SetGeometryFunType = (
+  gl: WebGLRenderingContext,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  thickness: number
+) => void;
+
+const setGeometry: SetGeometryFunType = (
+  gl,
+  x,
+  y,
+  width,
+  height,
+  thickness
+) => {
+  const vertices2d = [
+    // left column
+    [x, y],
+    [x + thickness, y],
+    [x, y + height],
+    [x, y + height],
+    [x + thickness, y],
+    [x + thickness, y + height],
+    // top run
+    [x + thickness, y],
+    [x + width, y],
+    [x + thickness, y + thickness],
+    [x + thickness, y + thickness],
+    [x + width, y],
+    [x + width, y + thickness],
+    // middle run
+    [x + thickness, y + thickness * 2],
+    [x + width * (2 / 3), y + thickness * 2],
+    [x + thickness, y + thickness * 3],
+    [x + thickness, y + thickness * 3],
+    [x + (width * 2) / 3, y + thickness * 2],
+    [x + (width * 2) / 3, y + thickness * 3],
+  ];
+  const vertices = vertices2d.reduce((prevValue, currValue) => {
+    prevValue.push(currValue[0]);
+    prevValue.push(currValue[1]);
+    return prevValue;
+  }, []);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+};
+
+/**
  * Window Events
  */
 // Resize
@@ -158,19 +209,26 @@ const resolutionUniformLocation = gl.getUniformLocation(
   "u_resolution"
 );
 const colorUniformLocation = gl.getUniformLocation(program, "u_color");
+const translationUniformLocation = gl.getUniformLocation(
+  program,
+  "u_translation"
+);
 
 // Buffer for position
 const positionBuffer = gl.createBuffer();
 
-// bind buffer
-gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
 const rectParams = {
   translation: { x: 0, y: 0 },
   width: 100,
-  height: 30,
+  height: 150,
+  thickness: 30,
 };
 createControllers(gui);
+
+// bind buffer
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+const { height, translation, width, thickness } = rectParams;
+setGeometry(gl, translation.x, translation.y, width, height, thickness);
 
 const color = [Math.random(), Math.random(), Math.random(), 1];
 
@@ -182,13 +240,15 @@ const drawScene = () => {
   gl.useProgram(program);
   gl.enableVertexAttribArray(positionAttributeLocation);
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  const { height, translation, width } = rectParams;
-  setRectangle(gl, translation.x, translation.y, width, height);
+  //   const { height, translation, width } = rectParams;
+  //   setRectangle(gl, translation.x, translation.y, width, height);
   gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
   gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+  const { translation } = rectParams;
+  gl.uniform2f(translationUniformLocation, translation.x, translation.y);
   gl.uniform4fv(colorUniformLocation, color);
 
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  gl.drawArrays(gl.TRIANGLES, 0, 18);
 };
 drawScene();
