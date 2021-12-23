@@ -81,7 +81,59 @@ const createProgram: CreateProgramFunType = (
 const setGeometry = (gl: WebGLRenderingContext) => {
   gl.bufferData(
     gl.ARRAY_BUFFER,
-    new Float32Array([0, 0, 0, 200, 200, 200]),
+    new Float32Array([
+      -150, -100, 150, -100, -150, 100, 150, -100, -150, 100, 150, 100,
+    ]),
+    gl.STATIC_DRAW
+  );
+};
+
+/**
+ * SetColors Function
+ */
+const setColors = (gl: WebGLRenderingContext) => {
+  const r1 = Math.random();
+  const b1 = Math.random();
+  const g1 = Math.random();
+
+  const r2 = Math.random();
+  const b2 = Math.random();
+  const g2 = Math.random();
+
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([
+      // first Color
+      r1,
+      b1,
+      g1,
+      1,
+      // second Color
+      r1,
+      b1,
+      g1,
+      1,
+      // third Color
+      r1,
+      b1,
+      g1,
+      1,
+      // fourth Color
+      r2,
+      b2,
+      g2,
+      1,
+      // fifth Color
+      r2,
+      b2,
+      g2,
+      1,
+      // sixth Color
+      r2,
+      b2,
+      g2,
+      1,
+    ]),
     gl.STATIC_DRAW
   );
 };
@@ -102,16 +154,22 @@ const fragmentShader = createShader(
 const program = createProgram(gl, vertexShader, fragmentShader);
 gl.useProgram(program);
 
+// Position attribute location
 const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
-gl.enableVertexAttribArray(positionAttributeLocation);
 const positionBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 setGeometry(gl);
 
+// Color attribute location
+const colorAttributeLocation = gl.getAttribLocation(program, "a_color");
+const colorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+setColors(gl);
+
 const matrixLocation = gl.getUniformLocation(program, "u_matrix");
-const translation = [300, 300];
-const angleInRadians = Math.PI * 0.1;
-const scale = [0.5, 1];
+const translation = [200, 150];
+const angleInRadians = 0;
+const scale = [1, 1];
 let matrix = m3.projection(clientWidth, clientHeight);
 matrix = m3.translate(matrix, translation[0], translation[1]);
 matrix = m3.rotate(matrix, angleInRadians);
@@ -119,6 +177,12 @@ matrix = m3.scale(matrix, scale[0], scale[1]);
 
 gl.uniformMatrix3fv(matrixLocation, false, matrix);
 
+gl.enableVertexAttribArray(positionAttributeLocation);
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-gl.drawArrays(gl.TRIANGLES, 0, 3);
+gl.enableVertexAttribArray(colorAttributeLocation);
+gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+gl.vertexAttribPointer(colorAttributeLocation, 4, gl.FLOAT, false, 0, 0);
+
+gl.drawArrays(gl.TRIANGLES, 0, 6);
