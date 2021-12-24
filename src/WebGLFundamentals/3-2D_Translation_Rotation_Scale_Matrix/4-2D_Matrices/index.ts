@@ -8,6 +8,13 @@ type Mat3 = [
   [number, number, number]
 ];
 const m3 = {
+  identity: (): Mat3 => {
+    return [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ];
+  },
   translation: (tx: number, ty: number): Mat3 => {
     return [
       [1, 0, 0],
@@ -78,7 +85,7 @@ const parameters = {
   width: 100,
   height: 150,
   thickness: 30,
-  translation: { x: 0, y: 0 },
+  translation: { x: 100, y: 150 },
   scale: { x: 1, y: 1 },
   angle: 0,
 };
@@ -311,6 +318,50 @@ const matrixUniformLocation = gl.getUniformLocation(program, "u_matrix");
 /**
  * Draw Scene
  */
+const create5F = () => {
+  /**
+   * Compute the matrices
+   */
+  const { translation, angle, scale } = parameters;
+  const translationMatrix = m3.translation(translation.x, translation.y);
+  const rotationMatrix = m3.rotation(angle, true);
+  const scaleMatrix = m3.scaling(scale.x, scale.y);
+
+  // Multiply the matrices
+  // ---order (rotationMatrix * translationMatrix) then scaleMatrix * (rotationMatrix * translationMatrix)
+  // let matrix = m3.multiply(translationMatrix, rotationMatrix);
+  // matrix = m3.multiply(matrix, scaleMatrix);
+
+  //   let matrix = m3.multiply(scaleMatrix, rotationMatrix);
+  //   matrix = m3.multiply(matrix, translationMatrix);
+
+  //   let matrix = m3.multiply(translationMatrix, scaleMatrix);
+  //   matrix = m3.multiply(matrix, rotationMatrix);
+
+  /**
+   * Draw 'F' 5 times
+   */
+  let matrix = m3.identity();
+  for (let i = 0; i < 5; i++) {
+    // Multiply the matrices.
+    matrix = m3.multiply(matrix, translationMatrix);
+    matrix = m3.multiply(matrix, rotationMatrix);
+    matrix = m3.multiply(matrix, scaleMatrix);
+
+    gl.uniformMatrix3fv(
+      matrixUniformLocation,
+      false,
+      matrix.reduce((prevValue: number[], currValue) => {
+        prevValue.push(currValue[0]);
+        prevValue.push(currValue[1]);
+        prevValue.push(currValue[2]);
+        return prevValue;
+      }, [])
+    );
+    gl.drawArrays(gl.TRIANGLES, 0, 18);
+  }
+};
+
 const drawScene = () => {
   // to tell GLSL how to change clipSpace values to pixels
   gl.viewport(0, 0, canvas.width, canvas.height);
@@ -331,17 +382,6 @@ const drawScene = () => {
   gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
   /**
-   * Compute the matrices
-   */
-  const { translation, angle, scale } = parameters;
-  const translationMatrix = m3.translation(translation.x, translation.y);
-  const rotationMatrix = m3.rotation(angle, true);
-  const scaleMatrix = m3.scaling(scale.x, scale.y);
-  // Multiply the matrices
-  let matrix = m3.multiply(translationMatrix, rotationMatrix);
-  matrix = m3.multiply(matrix, scaleMatrix);
-
-  /**
    * Binding Data to uniform
    */
   gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
@@ -352,6 +392,21 @@ const drawScene = () => {
     Math.random(),
     1.0
   );
+
+  /**
+   * Compute the matrices
+   */
+  const { translation, angle, scale } = parameters;
+  const translationMatrix = m3.translation(translation.x, translation.y);
+  const rotationMatrix = m3.rotation(angle, true);
+  const scaleMatrix = m3.scaling(scale.x, scale.y);
+
+  // Multiply the matrices.
+  const moveOriginMatrix = m3.translation(-50, -75);
+  let matrix = m3.multiply(translationMatrix, rotationMatrix);
+  matrix = m3.multiply(matrix, scaleMatrix);
+  matrix = m3.multiply(matrix, moveOriginMatrix);
+
   gl.uniformMatrix3fv(
     matrixUniformLocation,
     false,
