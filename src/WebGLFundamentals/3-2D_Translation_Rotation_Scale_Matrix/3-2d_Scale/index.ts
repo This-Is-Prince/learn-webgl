@@ -10,6 +10,7 @@ const parameters = {
   height: 150,
   thickness: 30,
   translation: { x: 0, y: 0 },
+  scale: { x: 1, y: 1 },
   angle: Math.PI * 0.5,
 };
 let controllers: dat.GUIController[] = [];
@@ -28,12 +29,28 @@ const createControllers = (gui: dat.GUI) => {
       .min(0)
       .max(canvas.width - parameters.width)
       .step(1)
+      .name("translationX")
       .onChange(drawScene),
     gui
       .add(parameters.translation, "y")
       .min(0)
       .max(canvas.height - parameters.height)
       .step(1)
+      .name("translationY")
+      .onChange(drawScene),
+    gui
+      .add(parameters.scale, "x")
+      .min(-5)
+      .max(5)
+      .step(0.001)
+      .name("scaleX")
+      .onChange(drawScene),
+    gui
+      .add(parameters.scale, "y")
+      .min(-5)
+      .max(5)
+      .step(0.001)
+      .name("scaleY")
       .onChange(drawScene),
     gui
       .add(parameters, "angle")
@@ -102,41 +119,6 @@ window.addEventListener("resize", () => {
   createControllers(gui);
   drawScene();
 });
-
-/**
- * Set Rectangle
- */
-// const setRectangle = (
-//   gl: WebGLRenderingContext,
-//   x: number,
-//   y: number,
-//   width: number,
-//   height: number
-// ) => {
-//   const x1 = x;
-//   const y1 = y;
-//   const x2 = x + width;
-//   const y2 = y + height;
-//   const rectVertices = [
-//     [x1, y1],
-//     [x2, y1],
-//     [x1, y2],
-//     [x1, y2],
-//     [x2, y1],
-//     [x2, y2],
-//   ];
-//   gl.bufferData(
-//     gl.ARRAY_BUFFER,
-//     new Float32Array(
-//       rectVertices.reduce((prevValue, currValue) => {
-//         prevValue.push(currValue[0]);
-//         prevValue.push(currValue[1]);
-//         return prevValue;
-//       }, [])
-//     ),
-//     gl.STATIC_DRAW
-//   );
-// };
 
 type SetFGeometryFunType = (
   gl: WebGLRenderingContext,
@@ -259,6 +241,7 @@ const translationUniformLocation = gl.getUniformLocation(
   "u_translation"
 );
 const rotationUniformLocation = gl.getUniformLocation(program, "u_rotation");
+const scaleUniformLocation = gl.getUniformLocation(program, "u_scale");
 const colorUniformLocation = gl.getUniformLocation(program, "u_color");
 
 /**
@@ -282,16 +265,17 @@ const drawScene = () => {
   gl.enableVertexAttribArray(positionAttributeLocation);
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   // const { translation, width, height } = parameters;
-  const { translation, angle } = parameters;
+  const { translation, angle, scale } = parameters;
   // setRectangle(gl, 0, 0, width, height);
   gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
   /**
    * Binding Data to uniform
    */
-  gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
-  gl.uniform2f(translationUniformLocation, translation.x, translation.y);
+  gl.uniform2f(scaleUniformLocation, scale.x, scale.y);
   gl.uniform2f(rotationUniformLocation, Math.cos(angle), Math.sin(angle));
+  gl.uniform2f(translationUniformLocation, translation.x, translation.y);
+  gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
   gl.uniform4f(
     colorUniformLocation,
     Math.random(),
