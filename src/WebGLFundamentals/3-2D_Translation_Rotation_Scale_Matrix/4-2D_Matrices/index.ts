@@ -8,6 +8,13 @@ type Mat3 = [
   [number, number, number]
 ];
 const m3 = {
+  projection: (width: number, height: number): Mat3 => {
+    return [
+      [2 / width, 0, 0],
+      [0, -2 / height, 0],
+      [-1, 1, 1],
+    ];
+  },
   identity: (): Mat3 => {
     return [
       [1, 0, 0],
@@ -75,6 +82,15 @@ const m3 = {
         b20 * a02 + b21 * a12 + b22 * a22,
       ],
     ];
+  },
+  translate: (m: Mat3, tx: number, ty: number): Mat3 => {
+    return m3.multiply(m, m3.translation(tx, ty));
+  },
+  rotate: (m: Mat3, angleInRadians: number) => {
+    return m3.multiply(m, m3.rotation(angleInRadians));
+  },
+  scale: (m: Mat3, sx: number, sy: number) => {
+    return m3.multiply(m, m3.scaling(sx, sy));
   },
 };
 
@@ -308,11 +324,15 @@ setFGeometry(gl, 0, 0, width, height, thickness);
 /**
  * Location of uniforms
  */
-const resolutionUniformLocation = gl.getUniformLocation(
-  program,
-  "u_resolution"
-);
 const colorUniformLocation = gl.getUniformLocation(program, "u_color");
+gl.useProgram(program);
+gl.uniform4f(
+  colorUniformLocation,
+  Math.random(),
+  Math.random(),
+  Math.random(),
+  1.0
+);
 const matrixUniformLocation = gl.getUniformLocation(program, "u_matrix");
 
 /**
@@ -382,30 +402,14 @@ const drawScene = () => {
   gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
   /**
-   * Binding Data to uniform
-   */
-  gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
-  gl.uniform4f(
-    colorUniformLocation,
-    Math.random(),
-    Math.random(),
-    Math.random(),
-    1.0
-  );
-
-  /**
    * Compute the matrices
    */
   const { translation, angle, scale } = parameters;
-  const translationMatrix = m3.translation(translation.x, translation.y);
-  const rotationMatrix = m3.rotation(angle, true);
-  const scaleMatrix = m3.scaling(scale.x, scale.y);
-
-  // Multiply the matrices.
-  const moveOriginMatrix = m3.translation(-50, -75);
-  let matrix = m3.multiply(translationMatrix, rotationMatrix);
-  matrix = m3.multiply(matrix, scaleMatrix);
-  matrix = m3.multiply(matrix, moveOriginMatrix);
+  let matrix = m3.projection(canvas.width, canvas.height);
+  matrix = m3.translate(matrix, translation.x, translation.y);
+  matrix = m3.rotate(matrix, angle);
+  matrix = m3.scale(matrix, scale.x, scale.y);
+  matrix = m3.translate(matrix, -50, -75);
 
   gl.uniformMatrix3fv(
     matrixUniformLocation,
