@@ -10,7 +10,7 @@ const parameters = {
   height: 150,
   thickness: 30,
   translation: { x: 0, y: 0 },
-  angle: Math.PI * 0.5,
+  angle: 0,
 };
 let controllers: dat.GUIController[] = [];
 const gui = new dat.GUI();
@@ -37,8 +37,8 @@ const createControllers = (gui: dat.GUI) => {
       .onChange(drawScene),
     gui
       .add(parameters, "angle")
-      .min(-Math.PI)
-      .max(Math.PI)
+      .min(0)
+      .max(2 * Math.PI)
       .step(0.001)
       .onChange(drawScene)
   );

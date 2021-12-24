@@ -6,9 +6,11 @@ uniform vec2 u_translation;
 uniform vec2 u_rotation;
 
 void main(){
+    // x1 = xcos(angle) - ysin(angle)
+    // y1 = xsin(angle) + ycos(angle)
     vec2 rotatedPosition = vec2(
-    a_position.x * u_rotation.y + a_position.y * u_rotation.x,
-    a_position.y * u_rotation.y - a_position.x * u_rotation.x
+    a_position.x * u_rotation.x - a_position.y * u_rotation.y,
+    a_position.y * u_rotation.x + a_position.x * u_rotation.y
     );
     vec2 position = rotatedPosition + u_translation;
     // convert a_position to zero to one
