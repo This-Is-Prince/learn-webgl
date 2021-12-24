@@ -54,8 +54,8 @@ const createControllers = (gui: dat.GUI) => {
       .onChange(drawScene),
     gui
       .add(parameters, "angle")
-      .min(-Math.PI)
-      .max(Math.PI)
+      .min(0)
+      .max(2 * Math.PI)
       .step(0.001)
       .onChange(drawScene)
   );
@@ -273,7 +273,7 @@ const drawScene = () => {
    * Binding Data to uniform
    */
   gl.uniform2f(scaleUniformLocation, scale.x, scale.y);
-  gl.uniform2f(rotationUniformLocation, Math.sin(angle), Math.cos(angle));
+  gl.uniform2f(rotationUniformLocation, Math.cos(angle), Math.sin(angle));
   gl.uniform2f(translationUniformLocation, translation.x, translation.y);
   gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
   gl.uniform4f(
