@@ -300,27 +300,27 @@ const setFGeometry: SetFGeometryFunType = (
   const fVertices = [
     // left column front
     [x, y, z],
-    [x + thickness, y, z],
-    [x, y + height, z],
     [x, y + height, z],
     [x + thickness, y, z],
+    [x, y + height, z],
     [x + thickness, y + height, z],
+    [x + thickness, y, z],
 
     // top rung front
     [x + thickness, y, z],
-    [x + width, y, z],
-    [x + thickness, y + thickness, z],
     [x + thickness, y + thickness, z],
     [x + width, y, z],
+    [x + thickness, y + thickness, z],
     [x + width, y + thickness, z],
+    [x + width, y, z],
 
     // middle rung front
     [x + thickness, y + thickness * 2, z],
-    [x + width * (2 / 3), y + thickness * 2, z],
-    [x + thickness, y + thickness * 3, z],
     [x + thickness, y + thickness * 3, z],
     [x + width * (2 / 3), y + thickness * 2, z],
+    [x + thickness, y + thickness * 3, z],
     [x + width * (2 / 3), y + thickness * 3, z],
+    [x + width * (2 / 3), y + thickness * 2, z],
 
     // left column back
     [x, y, z + thickness],
@@ -372,27 +372,27 @@ const setFGeometry: SetFGeometryFunType = (
 
     // between top rung and middle
     [x + thickness, y + thickness, z],
+    [x + thickness, y + thickness * 2, z + thickness],
     [x + thickness, y + thickness, z + thickness],
-    [x + thickness, y + thickness * 2, z + thickness],
     [x + thickness, y + thickness, z],
-    [x + thickness, y + thickness * 2, z + thickness],
     [x + thickness, y + thickness * 2, z],
+    [x + thickness, y + thickness * 2, z + thickness],
 
     // top of middle rung
     [x + thickness, y + thickness * 2, z],
+    [x + width * (2 / 3), y + thickness * 2, z + thickness],
     [x + thickness, y + thickness * 2, z + thickness],
-    [x + width * (2 / 3), y + thickness * 2, z + thickness],
     [x + thickness, y + thickness * 2, z],
-    [x + width * (2 / 3), y + thickness * 2, z + thickness],
     [x + width * (2 / 3), y + thickness * 2, z],
+    [x + width * (2 / 3), y + thickness * 2, z + thickness],
 
     // right of middle rung
     [x + width * (2 / 3), y + thickness * 2, z],
+    [x + width * (2 / 3), y + thickness * 3, z + thickness],
     [x + width * (2 / 3), y + thickness * 2, z + thickness],
-    [x + width * (2 / 3), y + thickness * 3, z + thickness],
     [x + width * (2 / 3), y + thickness * 2, z],
-    [x + width * (2 / 3), y + thickness * 3, z + thickness],
     [x + width * (2 / 3), y + thickness * 3, z],
+    [x + width * (2 / 3), y + thickness * 3, z + thickness],
 
     // bottom of middle rung.
     [x + thickness, y + thickness * 3, z],
@@ -404,11 +404,11 @@ const setFGeometry: SetFGeometryFunType = (
 
     // right of bottom
     [x + thickness, y + thickness * 3, z],
+    [x + thickness, y + height, z + thickness],
     [x + thickness, y + thickness * 3, z + thickness],
-    [x + thickness, y + height, z + thickness],
     [x + thickness, y + thickness * 3, z],
-    [x + thickness, y + height, z + thickness],
     [x + thickness, y + height, z],
+    [x + thickness, y + height, z + thickness],
 
     // bottom
     [x, y + height, z],
@@ -417,6 +417,14 @@ const setFGeometry: SetFGeometryFunType = (
     [x, y + height, z],
     [x + thickness, y + height, z + thickness],
     [x + thickness, y + height, z],
+
+    // left side
+    [x, y, z],
+    [x, y, z + thickness],
+    [x, y + height, z + thickness],
+    [x, y, z],
+    [x, y + height, z + thickness],
+    [x, y + height, z],
   ];
   gl.bufferData(
     gl.ARRAY_BUFFER,
@@ -507,14 +515,16 @@ const colorUniformLocation = gl.getUniformLocation(program, "u_color");
 const matrixUniformLocation = gl.getUniformLocation(program, "u_matrix");
 
 const drawScene = () => {
+  gl.enable(gl.CULL_FACE);
+  gl.enable(gl.DEPTH_TEST);
   // to tell GLSL how to change clipSpace values to pixels
   gl.viewport(0, 0, canvas.width, canvas.height);
 
   // it sets color for when you call glClear.
   // gl.clearColor(1.0, 1.0, 0, 1.0);
-  gl.clearColor(0, 0, 0, 0);
+  //   gl.clearColor(0, 0, 0, 0);
   // it takes the color you specified above and fill canvas with that color
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   // use this program
   gl.useProgram(program);
 
