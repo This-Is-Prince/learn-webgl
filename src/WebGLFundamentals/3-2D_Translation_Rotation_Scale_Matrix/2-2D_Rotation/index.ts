@@ -7,8 +7,10 @@ import * as dat from "dat.gui";
  */
 const parameters = {
   width: 100,
-  height: 30,
+  height: 150,
+  thickness: 30,
   translation: { x: 0, y: 0 },
+  angle: Math.PI * 0.5,
 };
 let controllers: dat.GUIController[] = [];
 const gui = new dat.GUI();
@@ -19,9 +21,8 @@ const createControllers = (gui: dat.GUI) => {
     }
   });
   controllers = [];
+
   controllers.push(
-    gui.add(parameters, "width").min(10).max(100).step(1).onChange(drawScene),
-    gui.add(parameters, "height").min(10).max(100).step(1).onChange(drawScene),
     gui
       .add(parameters.translation, "x")
       .min(0)
@@ -33,6 +34,12 @@ const createControllers = (gui: dat.GUI) => {
       .min(0)
       .max(canvas.height - parameters.height)
       .step(1)
+      .onChange(drawScene),
+    gui
+      .add(parameters, "angle")
+      .min(-Math.PI)
+      .max(Math.PI)
+      .step(0.001)
       .onChange(drawScene)
   );
 };
@@ -99,29 +106,89 @@ window.addEventListener("resize", () => {
 /**
  * Set Rectangle
  */
-const setRectangle = (
+// const setRectangle = (
+//   gl: WebGLRenderingContext,
+//   x: number,
+//   y: number,
+//   width: number,
+//   height: number
+// ) => {
+//   const x1 = x;
+//   const y1 = y;
+//   const x2 = x + width;
+//   const y2 = y + height;
+//   const rectVertices = [
+//     [x1, y1],
+//     [x2, y1],
+//     [x1, y2],
+//     [x1, y2],
+//     [x2, y1],
+//     [x2, y2],
+//   ];
+//   gl.bufferData(
+//     gl.ARRAY_BUFFER,
+//     new Float32Array(
+//       rectVertices.reduce((prevValue, currValue) => {
+//         prevValue.push(currValue[0]);
+//         prevValue.push(currValue[1]);
+//         return prevValue;
+//       }, [])
+//     ),
+//     gl.STATIC_DRAW
+//   );
+// };
+
+type SetFGeometryFunType = (
   gl: WebGLRenderingContext,
   x: number,
   y: number,
   width: number,
-  height: number
+  height: number,
+  thickness: number
+) => void;
+const setFGeometry: SetFGeometryFunType = (
+  gl,
+  x,
+  y,
+  width,
+  height,
+  thickness
 ) => {
-  const x1 = x;
-  const y1 = y;
-  const x2 = x + width;
-  const y2 = y + height;
-  const rectVertices = [
-    [x1, y1],
-    [x2, y1],
-    [x1, y2],
-    [x1, y2],
-    [x2, y1],
-    [x2, y2],
+  const fVertices = [
+    // -----left column
+    // left triangle
+    [x, y],
+    [x + thickness, y],
+    [x, y + height],
+    // right triangle
+    [x, y + height],
+    [x + thickness, y],
+    [x + thickness, y + height],
+
+    // -----upper rung
+    // left triangle
+    [x + thickness, y],
+    [x + width, y],
+    [x + thickness, y + thickness],
+    // right triangle
+    [x + thickness, y + thickness],
+    [x + width, y],
+    [x + width, y + thickness],
+
+    // -----middle rung
+    // left triangle
+    [x + thickness, y + thickness * 2],
+    [x + width * (2 / 3), y + thickness * 2],
+    [x + thickness, y + thickness * 3],
+    // right triangle
+    [x + thickness, y + thickness * 3],
+    [x + width * (2 / 3), y + thickness * 2],
+    [x + width * (2 / 3), y + thickness * 3],
   ];
   gl.bufferData(
     gl.ARRAY_BUFFER,
     new Float32Array(
-      rectVertices.reduce((prevValue, currValue) => {
+      fVertices.reduce((prevValue, currValue) => {
         prevValue.push(currValue[0]);
         prevValue.push(currValue[1]);
         return prevValue;
@@ -142,6 +209,7 @@ const updateCanvasSize = (canvas: HTMLCanvasElement) => {
   canvas.width = (clientWidth * pixelRatio) | 0;
   canvas.height = (clientHeight * pixelRatio) | 0;
 };
+updateCanvasSize(canvas);
 
 /**
  * WebGL Rendering Context
@@ -175,6 +243,9 @@ const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
  * Creating Buffer for attributes
  */
 const positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+const { width, height, thickness } = parameters;
+setFGeometry(gl, 0, 0, width, height, thickness);
 
 /**
  * Location of uniforms
@@ -183,12 +254,12 @@ const resolutionUniformLocation = gl.getUniformLocation(
   program,
   "u_resolution"
 );
+const translationUniformLocation = gl.getUniformLocation(
+  program,
+  "u_translation"
+);
+const rotationUniformLocation = gl.getUniformLocation(program, "u_rotation");
 const colorUniformLocation = gl.getUniformLocation(program, "u_color");
-
-/**
- * Change Canvas size
- */
-updateCanvasSize(canvas);
 
 /**
  * Draw Scene
@@ -210,14 +281,17 @@ const drawScene = () => {
    */
   gl.enableVertexAttribArray(positionAttributeLocation);
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  const { translation, width, height } = parameters;
-  setRectangle(gl, translation.x, translation.y, width, height);
+  // const { translation, width, height } = parameters;
+  const { translation, angle } = parameters;
+  // setRectangle(gl, 0, 0, width, height);
   gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
   /**
    * Binding Data to uniform
    */
   gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+  gl.uniform2f(translationUniformLocation, translation.x, translation.y);
+  gl.uniform2f(rotationUniformLocation, Math.cos(angle), Math.sin(angle));
   gl.uniform4f(
     colorUniformLocation,
     Math.random(),
@@ -225,7 +299,7 @@ const drawScene = () => {
     Math.random(),
     1.0
   );
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  gl.drawArrays(gl.TRIANGLES, 0, 18);
 };
 drawScene();
 // create all controllers
