@@ -113,7 +113,8 @@ const drawScene = (gl: WebGLRenderingContext) => {
   gl.uniform1f(fudgeFactorUniformLocation, fudgeFactor);
 
   // Matrix
-  let matrix = m4.projection(canvas.width, canvas.height, 400);
+  let matrix = m4.makeZToMatrix(fudgeFactor);
+  matrix = m4.multiply(matrix, m4.projection(canvas.width, canvas.height, 400));
   matrix = m4.translate(matrix, tx, ty, tz);
   matrix = m4.xRotate(matrix, rx);
   matrix = m4.yRotate(matrix, ry);
