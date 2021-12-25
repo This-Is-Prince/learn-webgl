@@ -29,6 +29,12 @@ type YRotate = (m: Mat4, angleInRadians: number) => Mat4;
 type ZRotate = (m: Mat4, angleInRadians: number) => Mat4;
 type Mat4x4To1x16 = (m: Mat4) => number[];
 type MakeZToMatrix = (fudgeFactor: number) => Mat4;
+type Perspective = (
+  fov: number,
+  aspect: number,
+  near: number,
+  far: number
+) => Mat4;
 
 interface M4 {
   orthographicProjection: OrthographicProjection;
@@ -47,6 +53,7 @@ interface M4 {
   zRotate: ZRotate;
   mat4x4To1x16: Mat4x4To1x16;
   makeZToMatrix: MakeZToMatrix;
+  perspective: Perspective;
 }
 const degreeToRadian = (angleInDegree: number) => {
   return angleInDegree * (Math.PI / 180);
@@ -59,6 +66,17 @@ const m4: M4 = {
       [0, 1, 0, 0],
       [0, 0, 1, fudgeFactor],
       [0, 0, 0, 1],
+    ];
+  },
+  perspective: (fov, aspect, near, far) => {
+    fov = degreeToRadian(fov);
+    const f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
+    const rangeInv = 1.0 / (near - far);
+    return [
+      [f / aspect, 0, 0, 0],
+      [0, f, 0, 0],
+      [0, 0, (near + far) * rangeInv, -1],
+      [0, 0, near * far * rangeInv * 2, 0],
     ];
   },
   orthographicProjection: (left, right, top, bottom, near, far) => {

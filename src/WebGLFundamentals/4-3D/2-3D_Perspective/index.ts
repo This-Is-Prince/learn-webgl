@@ -106,15 +106,20 @@ const drawScene = (gl: WebGLRenderingContext) => {
     translate: { tx, ty, tz },
     scale: { sx, sy, sz },
     rotate: { rx, ry, rz },
-    fudgeFactor,
+    fov,
   } = parameters;
 
   // FudgeFactor
-  gl.uniform1f(fudgeFactorUniformLocation, fudgeFactor);
+  // gl.uniform1f(fudgeFactorUniformLocation, fudgeFactor);
 
   // Matrix
-  let matrix = m4.makeZToMatrix(fudgeFactor);
-  matrix = m4.multiply(matrix, m4.projection(canvas.width, canvas.height, 400));
+  // let matrix = m4.makeZToMatrix(fudgeFactor);
+  // matrix = m4.multiply(matrix, m4.projection(canvas.width, canvas.height, 400));
+
+  const aspect = canvas.clientWidth / canvas.clientHeight;
+  const zNear = 1;
+  const zFar = 2000;
+  let matrix = m4.perspective(fov, aspect, zNear, zFar);
   matrix = m4.translate(matrix, tx, ty, tz);
   matrix = m4.xRotate(matrix, rx);
   matrix = m4.yRotate(matrix, ry);

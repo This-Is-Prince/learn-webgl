@@ -10,10 +10,13 @@ const parameters = {
   height: 150,
   thicknessOfRung: 30,
   depth: 30,
-  translate: { tx: 45, ty: 150, tz: 0 },
+  translate: { tx: -150, ty: 0, tz: -360 },
   scale: { sx: 1, sy: 1, sz: 1 },
-  rotate: { rx: 40, ry: 25, rz: 325 },
+  rotate: { rx: 190, ry: 40, rz: 320 },
   fudgeFactor: 1,
+  fov: 60,
+  near: 1,
+  far: 2000,
 };
 const createControllers = (
   gl: WebGLRenderingContext,
@@ -27,6 +30,14 @@ const createControllers = (
   controllers = [];
   controllers.push(
     gui
+      .add(parameters, "fov")
+      .min(0)
+      .max(180)
+      .step(1)
+      .onChange(() => {
+        drawScene(gl);
+      }),
+    gui
       .add(parameters, "fudgeFactor")
       .min(0)
       .max(5)
@@ -36,7 +47,7 @@ const createControllers = (
       }),
     gui
       .add(parameters.translate, "tx")
-      .min(0)
+      .min(-(gl.canvas.width - parameters.width))
       .max(gl.canvas.width - parameters.width)
       .step(1)
       .name("translateX")
@@ -45,7 +56,7 @@ const createControllers = (
       }),
     gui
       .add(parameters.translate, "ty")
-      .min(0)
+      .min(-(gl.canvas.height - parameters.height))
       .max(gl.canvas.height - parameters.height)
       .step(1)
       .name("translateY")
@@ -54,8 +65,8 @@ const createControllers = (
       }),
     gui
       .add(parameters.translate, "tz")
-      .min(-400 + parameters.depth)
-      .max(400 - parameters.depth)
+      .min(-2000)
+      .max(1)
       .step(1)
       .name("translateZ")
       .onChange(() => {
