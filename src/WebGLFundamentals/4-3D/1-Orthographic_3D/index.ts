@@ -9,6 +9,26 @@ type Mat4 = [
   [number, number, number, number]
 ];
 const m4 = {
+  orthographicProjection: (
+    left: number,
+    right: number,
+    top: number,
+    bottom: number,
+    near: number,
+    far: number
+  ): Mat4 => {
+    return [
+      [2 / (right - left), 0, 0, 0],
+      [0, 2 / (top - bottom), 0, 0],
+      [0, 0, 2 / (near - far), 0],
+      [
+        (left + right) / (left - right),
+        (bottom + top) / (bottom - top),
+        (near + far) / (near - far),
+        1,
+      ],
+    ];
+  },
   projection: (width: number, height: number, depth: number): Mat4 => {
     return [
       [2 / width, 0, 0, 0],
@@ -558,7 +578,15 @@ const drawScene = () => {
    * Compute the matrices
    */
   const { translation, rotation, scale } = parameters;
-  let matrix = m4.projection(canvas.width, canvas.height, 400);
+  // let matrix = m4.projection(canvas.width, canvas.height, 400);
+  let matrix = m4.orthographicProjection(
+    0,
+    canvas.clientWidth,
+    0,
+    canvas.clientHeight,
+    400,
+    -400
+  );
   matrix = m4.translate(matrix, translation.x, translation.y, translation.z);
   matrix = m4.xRotate(matrix, degToRad(rotation.x));
   matrix = m4.yRotate(matrix, degToRad(rotation.y));
