@@ -63,6 +63,15 @@ setColors(gl, noOfVertices);
  */
 const matrixUniformLocation = gl.getUniformLocation(program, "u_matrix");
 
+/**
+ * FudgeFactor Uniform Location
+ */
+const fudgeFactorUniformLocation = gl.getUniformLocation(
+  program,
+  "u_fudgeFactor"
+);
+const fudgeFactor = 1;
+
 const drawScene = (gl: WebGLRenderingContext) => {
   gl.viewport(0, 0, canvas.width, canvas.height);
   // clear canvas
@@ -92,13 +101,19 @@ const drawScene = (gl: WebGLRenderingContext) => {
     0
   );
 
-  // Matrix
-  let matrix = m4.projection(canvas.width, canvas.height, 400);
+  // Parameters
   const {
     translate: { tx, ty, tz },
     scale: { sx, sy, sz },
     rotate: { rx, ry, rz },
+    fudgeFactor,
   } = parameters;
+
+  // FudgeFactor
+  gl.uniform1f(fudgeFactorUniformLocation, fudgeFactor);
+
+  // Matrix
+  let matrix = m4.projection(canvas.width, canvas.height, 400);
   matrix = m4.translate(matrix, tx, ty, tz);
   matrix = m4.xRotate(matrix, rx);
   matrix = m4.yRotate(matrix, ry);

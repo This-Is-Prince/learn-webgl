@@ -13,6 +13,7 @@ const parameters = {
   translate: { tx: 45, ty: 150, tz: 0 },
   scale: { sx: 1, sy: 1, sz: 1 },
   rotate: { rx: 40, ry: 25, rz: 325 },
+  fudgeFactor: 1,
 };
 const createControllers = (
   gl: WebGLRenderingContext,
@@ -25,6 +26,14 @@ const createControllers = (
   });
   controllers = [];
   controllers.push(
+    gui
+      .add(parameters, "fudgeFactor")
+      .min(0)
+      .max(5)
+      .step(0.01)
+      .onChange(() => {
+        drawScene(gl);
+      }),
     gui
       .add(parameters.translate, "tx")
       .min(0)
