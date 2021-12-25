@@ -45,6 +45,9 @@ interface M4 {
   zRotate: ZRotate;
   mat4x4To1x16: (m: Mat4) => number[];
 }
+const degreeToRadian = (angleInDegree: number) => {
+  return angleInDegree * (Math.PI / 180);
+};
 
 const m4: M4 = {
   orthographicProjection: (left, right, top, bottom, near, far) => {
@@ -98,9 +101,9 @@ const m4: M4 = {
     const c = Math.cos(angleInRadians);
     const s = Math.sin(angleInRadians);
     return [
-      [c, 0, s, 0],
+      [c, 0, -s, 0],
       [0, 1, 0, 0],
-      [-s, 0, c, 0],
+      [s, 0, c, 0],
       [0, 0, 0, 1],
     ];
   },
@@ -165,14 +168,14 @@ const m4: M4 = {
   translate: (m, tx, ty, tz) => {
     return m4.multiply(m, m4.translation(tx, ty, tz));
   },
-  xRotate: (m, angleInRadians) => {
-    return m4.multiply(m, m4.xRotation(angleInRadians));
+  xRotate: (m, angleInDegree) => {
+    return m4.multiply(m, m4.xRotation(degreeToRadian(angleInDegree)));
   },
-  yRotate: (m, angleInRadians) => {
-    return m4.multiply(m, m4.yRotation(angleInRadians));
+  yRotate: (m, angleInDegree) => {
+    return m4.multiply(m, m4.yRotation(degreeToRadian(angleInDegree)));
   },
-  zRotate: (m, angleInRadians) => {
-    return m4.multiply(m, m4.zRotation(angleInRadians));
+  zRotate: (m, angleInDegree) => {
+    return m4.multiply(m, m4.zRotation(degreeToRadian(angleInDegree)));
   },
   scale: (m, sx, sy, sz) => {
     return m4.multiply(m, m4.scaling(sx, sy, sz));

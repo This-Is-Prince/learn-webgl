@@ -64,13 +64,14 @@ setColors(gl, noOfVertices);
 const matrixUniformLocation = gl.getUniformLocation(program, "u_matrix");
 
 const drawScene = (gl: WebGLRenderingContext) => {
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  // clear canvas
+  gl.clearColor(0, 0, 0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   // only front face draws
   gl.enable(gl.CULL_FACE);
   // enable depth buffer
   gl.enable(gl.DEPTH_TEST);
-
-  // clear canvas
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   gl.useProgram(program);
 
@@ -92,31 +93,20 @@ const drawScene = (gl: WebGLRenderingContext) => {
   );
 
   // Matrix
-  let matrix = m4.orthographicProjection(
-    0,
-    canvas.width,
-    0,
-    canvas.height,
-    400,
-    -400
-  );
+  let matrix = m4.projection(canvas.width, canvas.height, 400);
   const {
     translate: { tx, ty, tz },
     scale: { sx, sy, sz },
     rotate: { rx, ry, rz },
   } = parameters;
   matrix = m4.translate(matrix, tx, ty, tz);
-  matrix = m4.xRotate(matrix, degreeToRadian(rx));
-  matrix = m4.yRotate(matrix, degreeToRadian(ry));
-  matrix = m4.zRotate(matrix, degreeToRadian(rz));
+  matrix = m4.xRotate(matrix, rx);
+  matrix = m4.yRotate(matrix, ry);
+  matrix = m4.zRotate(matrix, rz);
   matrix = m4.scale(matrix, sx, sy, sz);
   gl.uniformMatrix4fv(matrixUniformLocation, false, m4.mat4x4To1x16(matrix));
 
   gl.drawArrays(gl.TRIANGLES, 0, 16 * 2 * 3);
-};
-
-const degreeToRadian = (angleInDegree: number) => {
-  return angleInDegree * (Math.PI / 180);
 };
 
 createControllers(gl, drawScene);

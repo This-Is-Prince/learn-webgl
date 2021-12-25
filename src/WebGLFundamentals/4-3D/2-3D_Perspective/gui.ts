@@ -10,9 +10,9 @@ const parameters = {
   height: 150,
   thicknessOfRung: 30,
   depth: 30,
-  translate: { tx: 100, ty: 100, tz: 0 },
+  translate: { tx: 45, ty: 150, tz: 0 },
   scale: { sx: 1, sy: 1, sz: 1 },
-  rotate: { rx: 0, ry: 0, rz: 0 },
+  rotate: { rx: 40, ry: 25, rz: 325 },
 };
 const createControllers = (
   gl: WebGLRenderingContext,
