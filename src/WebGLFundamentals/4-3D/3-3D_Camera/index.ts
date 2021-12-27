@@ -93,7 +93,7 @@ const drawScene = () => {
   );
 
   let projectionMatrix = m4.orthographicProjection(-1, 1, 1, -1, 400, -400);
-  let modelMatrix = m4.identity();
+  let modelMatrix = m4.translate(m4.identity(), 0, 0, 0);
   let width = canvas.width / 2;
   let height = canvas.height / 2;
   let viewMatrix: Mat4 = [
