@@ -1,9 +1,9 @@
 import vertexShaderSource from "./shaders/vertex.vs.glsl?raw";
 import fragmentShaderSource from "./shaders/fragment.fs.glsl?raw";
 import { createProgram, createShader } from "./utils/webgl-utils";
-import { setFGeometry } from "./geometry";
-import { setColors } from "./material";
 import { Mat4, m4 } from "./utils/m4";
+import { BoxGeometry } from "./geometry/BoxGeometry";
+import { MeshBasicMaterial } from "./material/MeshBasicMaterial";
 
 /**
  * Canvas
@@ -52,10 +52,21 @@ const colorAttributeLocation = gl.getAttribLocation(program, "a_color");
  */
 const positionBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-setFGeometry(gl);
+const geometry = new BoxGeometry(1, 1, 1);
+gl.bufferData(
+  gl.ARRAY_BUFFER,
+  new Float32Array(geometry.attributes.position),
+  gl.STATIC_DRAW
+);
+let length = geometry.attributes.position.length;
 const colorBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-setColors(gl);
+const material = new MeshBasicMaterial();
+gl.bufferData(
+  gl.ARRAY_BUFFER,
+  new Uint8Array(material.attributes.color),
+  gl.STATIC_DRAW
+);
 
 /**
  * Uniform Location
@@ -92,14 +103,24 @@ const drawScene = () => {
     0
   );
 
-  let projectionMatrix = m4.orthographicProjection(-1, 1, 1, -1, 400, -400);
-  let modelMatrix = m4.translate(m4.identity(), 0, 0, 0);
   let width = canvas.width / 2;
   let height = canvas.height / 2;
+  let projectionMatrix = m4.orthographicProjection(
+    -width,
+    width,
+    height,
+    -height,
+    400,
+    -400
+  );
+  let modelMatrix = m4.translate(m4.identity(), 0, 0, 0);
+  modelMatrix = m4.xRotate(modelMatrix, 180);
+  modelMatrix = m4.yRotate(modelMatrix, 45);
+  modelMatrix = m4.zRotate(modelMatrix, 45);
   let viewMatrix: Mat4 = [
-    [1 / width, 0, 0, 0],
-    [0, 1 / height, 0, 0],
-    [0, 0, 0, 0],
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
     [0, 0, 0, 1],
   ];
 
@@ -119,6 +140,6 @@ const drawScene = () => {
     m4.mat4x4To1x16(projectionMatrix)
   );
 
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  gl.drawArrays(gl.TRIANGLES, 0, length);
 };
 drawScene();
