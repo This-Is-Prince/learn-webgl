@@ -16,7 +16,6 @@ type YRotate = (matrix: Mat4, angleInDegree: number) => Mat4;
 type ZRotate = (matrix: Mat4, angleInDegree: number) => Mat4;
 type Translate = (matrix: Mat4, tx: number, ty: number, tz: number) => Mat4;
 type Scale = (matrix: Mat4, sx: number, sy: number, sz: number) => Mat4;
-type xShearing = (shearValue: number) => Mat4;
 type Mat4x4To1x16 = (matrix: Mat4) => number[];
 type OrthographicProjection = (
   left: number,
@@ -205,4 +204,4 @@ const m4: M4 = {
   },
 };
 
-export default m4;
+export { Mat4, m4 };
