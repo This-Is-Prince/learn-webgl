@@ -121,10 +121,14 @@ const drawScene = (gl: WebGLRenderingContext) => {
   const zFar = 2000;
   let matrix = m4.perspective(fov, aspect, zNear, zFar);
   matrix = m4.translate(matrix, tx, ty, tz);
-  matrix = m4.xRotate(matrix, rx);
+  matrix = m4.xRotate(matrix, rx + 180);
   matrix = m4.yRotate(matrix, ry);
   matrix = m4.zRotate(matrix, rz);
+  matrix = m4.translate(matrix, -50, -75, 0);
   matrix = m4.scale(matrix, sx, sy, sz);
+  // matrix = m4.yShear(matrix, 0.5);
+  // matrix = m4.xShear(matrix, 0.5);
+  matrix = m4.zShear(matrix, 0.5);
   gl.uniformMatrix4fv(matrixUniformLocation, false, m4.mat4x4To1x16(matrix));
 
   gl.drawArrays(gl.TRIANGLES, 0, 16 * 2 * 3);

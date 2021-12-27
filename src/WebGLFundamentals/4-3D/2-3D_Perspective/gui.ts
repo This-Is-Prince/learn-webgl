@@ -12,7 +12,7 @@ const parameters = {
   depth: 30,
   translate: { tx: -150, ty: 0, tz: -360 },
   scale: { sx: 1, sy: 1, sz: 1 },
-  rotate: { rx: 190, ry: 40, rz: 320 },
+  rotate: { rx: 0, ry: 0, rz: 0 },
   fudgeFactor: 1,
   fov: 60,
   near: 1,

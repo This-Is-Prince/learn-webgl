@@ -29,6 +29,12 @@ type YRotate = (m: Mat4, angleInRadians: number) => Mat4;
 type ZRotate = (m: Mat4, angleInRadians: number) => Mat4;
 type Mat4x4To1x16 = (m: Mat4) => number[];
 type MakeZToMatrix = (fudgeFactor: number) => Mat4;
+type XShearing = (a: number) => Mat4;
+type XShear = (matrix: Mat4, a: number) => Mat4;
+type YShearing = (a: number) => Mat4;
+type YShear = (matrix: Mat4, a: number) => Mat4;
+type ZShearing = (a: number) => Mat4;
+type ZShear = (matrix: Mat4, a: number) => Mat4;
 type Perspective = (
   fov: number,
   aspect: number,
@@ -37,6 +43,12 @@ type Perspective = (
 ) => Mat4;
 
 interface M4 {
+  xShearing: XShearing;
+  xShear: XShear;
+  yShearing: YShearing;
+  yShear: YShear;
+  zShearing: ZShearing;
+  zShear: ZShear;
   orthographicProjection: OrthographicProjection;
   projection: Projection;
   identity: Identity;
@@ -60,6 +72,41 @@ const degreeToRadian = (angleInDegree: number) => {
 };
 
 const m4: M4 = {
+  xShearing: (a) => {
+    return [
+      [1, 0, 0, 0],
+      [a, 1, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1],
+    ];
+  },
+  xShear: (matrix, a) => {
+    return m4.multiply(matrix, m4.xShearing(a));
+  },
+
+  yShearing: (a) => {
+    return [
+      [1, a, 0, 0],
+      [0, 1, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1],
+    ];
+  },
+  yShear: (matrix, a) => {
+    return m4.multiply(matrix, m4.yShearing(a));
+  },
+
+  zShearing: (a) => {
+    return [
+      [1, 0, 0, 0],
+      [0, 1, a, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1],
+    ];
+  },
+  zShear: (matrix, a) => {
+    return m4.multiply(matrix, m4.zShearing(a));
+  },
   makeZToMatrix: (fudgeFactor) => {
     return [
       [1, 0, 0, 0],
