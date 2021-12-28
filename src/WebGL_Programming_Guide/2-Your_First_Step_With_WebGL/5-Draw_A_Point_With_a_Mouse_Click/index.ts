@@ -7,8 +7,7 @@ window.addEventListener("load", () => {
 });
 const updateCanvasSize = (canvas: HTMLCanvasElement) => {
   const { clientHeight, clientWidth } = canvas;
-  //   const pixelRatio = Math.min(window.devicePixelRatio, 2);
-  const pixelRatio = 1;
+  const pixelRatio = Math.min(window.devicePixelRatio, 2);
   canvas.width = (pixelRatio * clientWidth) | 0;
   canvas.height = (pixelRatio * clientHeight) | 0;
 };
@@ -56,10 +55,15 @@ const clickedPoints = () => {
   const a_PointSize = gl.getAttribLocation(program, "a_PointSize");
   gl.vertexAttrib1f(a_PointSize, 10);
   const positions: number[] = [0, 0];
+  console.log(a_PointSize);
 
   canvas.addEventListener("click", function (event) {
-    let { x, y } = event;
+    let { clientX: x, clientY: y } = event;
+
     let { width, height } = this;
+    let pixelRatio = Math.min(window.devicePixelRatio, 2);
+    x = (x * pixelRatio) | 0;
+    y = (y * pixelRatio) | 0;
     x = (x / width) * 2 - 1;
     y = -((y / height) * 2 - 1);
     positions.push(x, y);
@@ -68,6 +72,7 @@ const clickedPoints = () => {
 
   gl.useProgram(program);
   gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.clearColor(0, 0, 0, 1);
   draw(gl, a_Position, positions);
 };
 
@@ -76,7 +81,6 @@ const draw = (
   a_Position: number,
   positions: number[]
 ) => {
-  gl.clearColor(0, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT);
   for (let i = 0; i < positions.length; i += 2) {
     gl.vertexAttrib3f(a_Position, positions[i], positions[i + 1], 0);
