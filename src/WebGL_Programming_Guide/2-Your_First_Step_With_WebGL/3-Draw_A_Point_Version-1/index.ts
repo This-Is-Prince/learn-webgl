@@ -70,11 +70,12 @@ const helloPoint1 = () => {
     fragmentShaderSource
   );
   const program = createProgram(gl, vertexShader, fragmentShader);
+  gl.useProgram(program);
+
   gl.viewport(0, 0, canvas.width, canvas.height);
   gl.clearColor(0, 0, 0, 1);
   gl.clearDepth(1);
   gl.clearStencil(0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-  gl.useProgram(program);
   gl.drawArrays(gl.POINTS, 0, 1);
 };
