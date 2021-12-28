@@ -43,12 +43,36 @@ const helloPoint2 = () => {
    * Program
    */
   const program = createProgram(gl, vertexShader, fragmentShader);
+
+  /**
+   * Attributes Locations
+   */
+  const a_Position = gl.getAttribLocation(program, "a_Position");
+  const a_PointSize = gl.getAttribLocation(program, "a_PointSize");
+  if (a_Position < 0) {
+    throw new Error(`Failed to get the storage location of a_Position`);
+  }
+  if (a_PointSize < 0) {
+    throw new Error(`Failed to get the storage location of a_PointSize`);
+  }
+  gl.vertexAttrib3f(a_Position, 0, 0, 0);
+  gl.vertexAttrib1f(a_PointSize, 10);
+
+  draw(gl, program, gl.POINTS, 3);
+};
+
+type DrawFunType = (
+  gl: WebGLRenderingContext,
+  program: WebGLProgram,
+  mode: number,
+  count: number
+) => void;
+
+const draw: DrawFunType = (gl: WebGLRenderingContext, program, mode, count) => {
   gl.useProgram(program);
   gl.clearColor(0, 0, 0, 1);
   gl.clearDepth(1);
   gl.clearStencil(0);
-
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
-  gl.drawArrays(gl.POINTS, 0, 1);
+  gl.drawArrays(mode, 0, count);
 };
