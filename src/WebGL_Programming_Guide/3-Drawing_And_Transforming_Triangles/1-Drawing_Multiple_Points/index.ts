@@ -45,35 +45,17 @@ const multiPoint = () => {
    */
   const a_Position = gl.getAttribLocation(program, "a_Position");
 
-  const g_points = [
-    {
-      x: 0.5,
-      y: -0.5,
-    },
-    {
-      x: -0.5,
-      y: -0.5,
-    },
-    {
-      x: 0,
-      y: 0.5,
-    },
-  ];
+  const vertices = new Float32Array([0.5, -0.5, -0.5, -0.5, 0, 0.5]);
+  const positionBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-  gl.useProgram(program);
-  gl.viewport(0, 0, canvas.width, canvas.height);
-  draw(gl, a_Position, g_points);
-};
-
-const draw = (
-  gl: WebGLRenderingContext,
-  a_Position: number,
-  g_points: { x: number; y: number }[]
-) => {
   gl.clearColor(0, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT);
-  g_points.forEach((point) => {
-    gl.vertexAttrib3f(a_Position, point.x, point.y, 0);
-    gl.drawArrays(gl.POINTS, 0, 1);
-  });
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.useProgram(program);
+
+  gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(a_Position);
+  gl.drawArrays(gl.POINTS, 0, 3);
 };
