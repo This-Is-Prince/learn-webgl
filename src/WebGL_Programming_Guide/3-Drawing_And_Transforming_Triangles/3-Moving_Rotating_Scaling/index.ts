@@ -66,7 +66,12 @@ const translatedTriangle = () => {
 
   gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(a_Position);
-  gl.uniform4f(u_Translation, 0.5, 0.5, 0.0, 0.0);
+  const translation = {
+    x: 0.5,
+    y: 0.5,
+    z: 0.0,
+  };
+  gl.uniform4f(u_Translation, translation.x, translation.y, translation.z, 0.0);
 
   gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
 };
