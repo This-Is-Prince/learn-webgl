@@ -50,7 +50,21 @@ const helloTriangle = () => {
   /**
    * Vertices
    */
-  const vertices = new Float32Array([0, 0.5, -0.5, -0.5, 0.5, -0.5]);
+  // for gl.TRIANGLES
+  //   const vertices = new Float32Array([
+  //     // left triangle
+  //     -0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
+  //     // right triangle
+  //     0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
+  //   ]);
+
+  // for gl.TRIANGLES_STRIP
+  //   const vertices = new Float32Array([
+  //     -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
+  //   ]);
+  const vertices = new Float32Array([
+    -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5,
+  ]);
 
   const positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -64,7 +78,10 @@ const helloTriangle = () => {
   gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(a_Position);
 
-  //   gl.drawArrays(gl.LINE_STRIP, 0, 3);
-  //   gl.drawArrays(gl.LINES, 0, 3);
-  gl.drawArrays(gl.LINE_LOOP, 0, 3);
+  // Using gl.TRIANGLES
+  //   gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
+  // Using gl.TRIANGLES_STRIP
+  //   gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
+  // Using gl.TRIANGLES_FAN
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
 };
