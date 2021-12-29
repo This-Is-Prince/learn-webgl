@@ -120,7 +120,7 @@ const transformTriangle = () => {
 
   // gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
   webGL = gl;
-  length = vertices.length;
+  length = vertices.length / 2;
   tick();
 };
 let webGL: WebGLRenderingContext;

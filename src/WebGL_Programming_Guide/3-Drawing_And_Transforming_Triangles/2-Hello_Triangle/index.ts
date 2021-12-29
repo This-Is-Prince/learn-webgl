@@ -79,9 +79,9 @@ const helloTriangle = () => {
   gl.enableVertexAttribArray(a_Position);
 
   // Using gl.TRIANGLES
-  //   gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
+  //   gl.drawArrays(gl.TRIANGLES, 0, vertices.length/2);
   // Using gl.TRIANGLES_STRIP
-  //   gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
+  //   gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length/2);
   // Using gl.TRIANGLES_FAN
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length);
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length / 2);
 };

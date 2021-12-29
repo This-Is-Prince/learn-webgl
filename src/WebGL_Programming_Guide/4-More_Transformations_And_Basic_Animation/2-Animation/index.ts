@@ -83,7 +83,7 @@ const animation = () => {
 
     gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
+    gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 2);
     // Next Frame
     window.requestAnimationFrame(tick);
   };

@@ -80,5 +80,5 @@ const translateAndThenRotate = () => {
   gl.enableVertexAttribArray(a_Position);
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
 
-  gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
+  gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 2);
 };
