@@ -1,8 +1,10 @@
 import vertexShaderSource from "./shaders/vertex.vs.glsl?raw";
 import fragmentShaderSource from "./shaders/fragment.fs.glsl?raw";
+import { createProgram, createShader } from "../utils";
+import { Matrix4 } from "../matrix4";
 
 window.addEventListener("load", () => {
-  toward3D();
+  lookAtTriangles();
 });
 
 const updateCanvasResolution = (
@@ -14,7 +16,7 @@ const updateCanvasResolution = (
   canvas.height = (clientHeight * pixelRatio) | 0;
 };
 
-const toward3D = () => {
+const lookAtTriangles = () => {
   /**
    * Canvas
    */
@@ -31,4 +33,87 @@ const toward3D = () => {
   if (!gl) {
     throw new Error(`webgl is not supported`);
   }
+
+  /**
+   * Shaders
+   */
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+  const fragmentShader = createShader(
+    gl,
+    gl.FRAGMENT_SHADER,
+    fragmentShaderSource
+  );
+
+  /**
+   * Program
+   */
+  const program = createProgram(gl, vertexShader, fragmentShader);
+
+  /**
+   * Vertices
+   */
+  const vertices = new Float32Array([
+    // The Back Green Triangle
+    // First vertex
+    0.0, 0.5, -0.4, 0.4, 1.0, 0.4,
+    // Second vertex
+    -0.5, -0.5, -0.4, 0.4, 1.0, 0.4,
+    // Third vertex
+    0.5, -0.5, -0.4, 1.0, 0.4, 0.4,
+
+    // The Middle Yellow Triangle
+    // First vertex
+    0.5, 0.4, -0.2, 1.0, 0.4, 0.4,
+    // Second vertex
+    -0.5, 0.4, -0.2, 1.0, 1.0, 0.4,
+    // Third vertex
+    0.5, -0.6, -0.2, 1.0, 1.0, 0.4,
+
+    // The Front blue Triangle
+    // First vertex
+    0.0, 0.5, 0.0, 0.4, 0.4, 1.0,
+    // Second vertex
+    -0.5, -0.5, 0.0, 0.4, 0.4, 1.0,
+    // Third vertex
+    0.5, -0.5, 0.0, 1.0, 0.4, 0.4,
+  ]);
+
+  /**
+   * Buffer
+   */
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+  /**
+   * a_Position
+   */
+  const a_Position = gl.getAttribLocation(program, "a_Position");
+
+  /**
+   * a_Color
+   */
+  const a_Color = gl.getAttribLocation(program, "a_Color");
+
+  /**
+   * u_ViewMatrix
+   */
+  const u_ViewMatrix = gl.getUniformLocation(program, "u_ViewMatrix");
+  const viewMatrix = new Matrix4();
+  viewMatrix.setLookAt(0.2, 0.25, 0.25, 0, 0, 0, 0, 1, 0);
+
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  gl.clearColor(0, 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.useProgram(program);
+
+  const FSIZE = vertices.BYTES_PER_ELEMENT;
+  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 6, 0);
+  gl.enableVertexAttribArray(a_Position);
+
+  gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+  gl.enableVertexAttribArray(a_Color);
+
+  gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements());
+  gl.drawArrays(gl.TRIANGLES, 0, 9);
 };

@@ -157,6 +157,79 @@ class Matrix4 {
   scale(x: number, y: number, z: number) {
     this._elements = this.multiply(this._elements, this.getScale(x, y, z));
   }
+  getLookAt(
+    eyeX: number,
+    eyeY: number,
+    eyeZ: number,
+    centerX: number,
+    centerY: number,
+    centerZ: number,
+    upX: number,
+    upY: number,
+    upZ: number
+  ): Mat4 {
+    let fx = centerX - eyeX;
+    let fy = centerY - eyeY;
+    let fz = centerZ - eyeZ;
+
+    // Normalize f.
+    let rlf = 1 / Math.sqrt(fx * fx + fy * fy + fz * fz);
+    fx *= rlf;
+    fy *= rlf;
+    fz *= rlf;
+
+    // Calculate cross product of f and up.
+    let sx = fy * upZ - fz * upY;
+    let sy = fz * upX - fx * upZ;
+    let sz = fx * upY - fy * upX;
+
+    // Normalize s.
+    let rls = 1 / Math.sqrt(sx * sx + sy * sy + sz * sz);
+    sx *= rls;
+    sy *= rls;
+    sz *= rls;
+
+    // Calculate cross product of s and f.
+    let ux = sy * fz - sz * fy;
+    let uy = sz * fx - sx * fz;
+    let uz = sx * fy - sy * fx;
+
+    return [
+      [sx, ux, -fx, 0],
+      [sy, uy, -fy, 0],
+      [sz, uz, -fz, 0],
+      [0, 0, 0, 1],
+    ];
+  }
+  setLookAt(
+    eyeX: number,
+    eyeY: number,
+    eyeZ: number,
+    centerX: number,
+    centerY: number,
+    centerZ: number,
+    upX: number,
+    upY: number,
+    upZ: number
+  ) {
+    this._elements = this.multiply(
+      this.getLookAt(
+        eyeX,
+        eyeY,
+        eyeZ,
+        centerX,
+        centerY,
+        centerZ,
+        upX,
+        upY,
+        upZ
+      ),
+      this.getTranslate(-eyeX, -eyeY, -eyeZ)
+    );
+
+    // Translate.
+  }
+  lookAt() {}
 }
 
 export { Matrix4 };
