@@ -6,6 +6,41 @@ type Mat4 = [
 ];
 type Direction = "X" | "Y" | "Z";
 
+type Point3 = {
+  x: number;
+  y: number;
+  z: number;
+};
+
+class Vector3 {
+  constructor(
+    public x: number = 0,
+    public y: number = 0,
+    public z: number = 0
+  ) {}
+  normalize() {
+    const { x, y, z } = this;
+    const magnitude = Math.sqrt(x * x + y * y + z * z);
+
+    this.x /= magnitude;
+    this.y /= magnitude;
+    this.z /= magnitude;
+  }
+  crossProduct(b: Vector3): Vector3 {
+    const { x, y, z } = this;
+    return new Vector3(
+      y * b.z - z * b.y,
+      -(x * b.z - b.x * z),
+      x * b.y - y * b.x
+    );
+  }
+  makeVector(start: Point3, end: Point3) {
+    this.x = end.x - start.x;
+    this.y = end.y - start.y;
+    this.z = end.z - start.z;
+  }
+}
+
 class Matrix4 {
   private _elements: Mat4;
   set(m: Matrix4) {
@@ -157,79 +192,30 @@ class Matrix4 {
   scale(x: number, y: number, z: number) {
     this._elements = this.multiply(this._elements, this.getScale(x, y, z));
   }
-  getLookAt(
-    eyeX: number,
-    eyeY: number,
-    eyeZ: number,
-    centerX: number,
-    centerY: number,
-    centerZ: number,
-    upX: number,
-    upY: number,
-    upZ: number
-  ): Mat4 {
-    let fx = centerX - eyeX;
-    let fy = centerY - eyeY;
-    let fz = centerZ - eyeZ;
+  private getLookAt(eye: Point3, target: Point3, up: Point3): Mat4 {
+    const f = new Vector3();
+    f.makeVector(eye, target);
+    f.normalize();
 
-    // Normalize f.
-    let rlf = 1 / Math.sqrt(fx * fx + fy * fy + fz * fz);
-    fx *= rlf;
-    fy *= rlf;
-    fz *= rlf;
+    let s = f.crossProduct(new Vector3(up.x, up.y, up.z));
+    s.normalize();
 
-    // Calculate cross product of f and up.
-    let sx = fy * upZ - fz * upY;
-    let sy = fz * upX - fx * upZ;
-    let sz = fx * upY - fy * upX;
-
-    // Normalize s.
-    let rls = 1 / Math.sqrt(sx * sx + sy * sy + sz * sz);
-    sx *= rls;
-    sy *= rls;
-    sz *= rls;
-
-    // Calculate cross product of s and f.
-    let ux = sy * fz - sz * fy;
-    let uy = sz * fx - sx * fz;
-    let uz = sx * fy - sy * fx;
+    let u = s.crossProduct(new Vector3(f.x, f.y, f.z));
 
     return [
-      [sx, ux, -fx, 0],
-      [sy, uy, -fy, 0],
-      [sz, uz, -fz, 0],
+      [s.x, u.x, -f.x, 0],
+      [s.y, u.y, -f.y, 0],
+      [s.z, u.z, -f.z, 0],
       [0, 0, 0, 1],
     ];
   }
-  setLookAt(
-    eyeX: number,
-    eyeY: number,
-    eyeZ: number,
-    centerX: number,
-    centerY: number,
-    centerZ: number,
-    upX: number,
-    upY: number,
-    upZ: number
-  ) {
+  setLookAt(eye: Point3, center: Point3, up: Point3) {
     this._elements = this.multiply(
-      this.getLookAt(
-        eyeX,
-        eyeY,
-        eyeZ,
-        centerX,
-        centerY,
-        centerZ,
-        upX,
-        upY,
-        upZ
-      ),
-      this.getTranslate(-eyeX, -eyeY, -eyeZ)
+      this.getLookAt(eye, center, up),
+      this.getTranslate(-eye.x, -eye.y, -eye.z)
     );
-
-    // Translate.
   }
   lookAt() {}
 }
 
-export { Matrix4 };
+export { Matrix4, Vector3 };

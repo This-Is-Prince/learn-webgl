@@ -100,7 +100,11 @@ const lookAtTriangles = () => {
    */
   const u_ViewMatrix = gl.getUniformLocation(program, "u_ViewMatrix");
   const viewMatrix = new Matrix4();
-  viewMatrix.setLookAt(0.2, 0.25, 0.25, 0, 0, 0, 0, 1, 0);
+  viewMatrix.setLookAt(
+    { x: 0.2, y: 0.25, z: 0.25 },
+    { x: 0, y: 0, z: 0 },
+    { x: 0, y: 1, z: 0 }
+  );
 
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0, 0, 0, 1);
