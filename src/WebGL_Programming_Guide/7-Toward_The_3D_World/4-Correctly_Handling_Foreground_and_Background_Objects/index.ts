@@ -105,29 +105,21 @@ const lookAtTriangles = () => {
   //   ]);
 
   const vertices = new Float32Array([
-    // The Back Green Triangle
+    // The Green Triangle
     // First vertex
-    0.0, 1.0, -4.0, 0.4, 1.0, 0.4,
+    0.0, 2.5, -5.0, 0.0, 1.0, 0.0,
     // Second vertex
-    -0.5, -1.0, -4.0, 0.4, 1.0, 0.4,
+    -2.5, -2.5, -5.0, 0.0, 1.0, 0.0,
     // Third vertex
-    0.5, -1.0, -4.0, 1.0, 0.4, 0.4,
+    2.5, -2.5, -5.0, 1.0, 0.0, 0.0,
 
-    // The Middle Yellow Triangle
+    // The Yellow Triangle
     // First vertex
-    0.0, 1.0, -2.0, 1.0, 1.0, 0.4,
+    0.0, 3.0, -5.0, 1.0, 0.0, 0.0,
     // Second vertex
-    -0.5, -1.0, -2.0, 1.0, 1.0, 0.4,
+    -3.0, -3.0, -5.0, 1.0, 1.0, 0.0,
     // Third vertex
-    0.5, -1.0, -2.0, 1.0, 0.4, 0.4,
-
-    // The Front blue Triangle
-    // First vertex
-    0.0, 1.0, 0.0, 0.4, 0.4, 1.0,
-    // Second vertex
-    -0.5, -1.0, 0.0, 0.4, 0.4, 1.0,
-    // Third vertex
-    0.5, -1.0, 0.0, 1.0, 0.4, 0.4,
+    3.0, -3.0, -5.0, 1.0, 1.0, 0.0,
   ]);
   /**
    * Buffer
@@ -151,7 +143,6 @@ const lookAtTriangles = () => {
    */
   const u_ModelMatrix = gl.getUniformLocation(program, "u_ModelMatrix");
   const modelMatrix = new Matrix4();
-  modelMatrix.setTranslate(0.75, 0, 0);
 
   /**
    * u_ViewMatrix
@@ -178,6 +169,8 @@ const lookAtTriangles = () => {
     100
   );
 
+  gl.enable(gl.POLYGON_OFFSET_FILL);
+  gl.enable(gl.DEPTH_TEST);
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0, 0, 0, 1);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -192,11 +185,9 @@ const lookAtTriangles = () => {
 
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix.elements());
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements());
-
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
-  gl.drawArrays(gl.TRIANGLES, 0, 9);
 
-  modelMatrix.setTranslate(-0.75, 0, 0);
-  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
-  gl.drawArrays(gl.TRIANGLES, 0, 9);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.polygonOffset(1.0, 1.0);
+  gl.drawArrays(gl.TRIANGLES, 3, 3);
 };
