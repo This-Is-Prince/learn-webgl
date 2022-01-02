@@ -65,81 +65,11 @@ class Matrix4 {
       [0, 0, 0, 1],
     ];
   }
-  private getIdentity(): Mat4 {
-    return [
-      [1, 0, 0, 0],
-      [0, 1, 0, 0],
-      [0, 0, 1, 0],
-      [0, 0, 0, 1],
-    ];
-  }
-  private getTranslate(x: number, y: number, z: number): Mat4 {
-    return [
-      [1, 0, 0, 0],
-      [0, 1, 0, 0],
-      [0, 0, 1, 0],
-      [x, y, z, 1],
-    ];
-  }
-  private getZRotate(c: number, s: number): Mat4 {
-    return [
-      [c, s, 0, 0],
-      [-s, c, 0, 0],
-      [0, 0, 1, 0],
-      [0, 0, 0, 1],
-    ];
-  }
-  private getXRotate(c: number, s: number): Mat4 {
-    return [
-      [1, 0, 0, 0],
-      [0, c, s, 0],
-      [0, -s, c, 0],
-      [0, 0, 0, 1],
-    ];
-  }
-  private getYRotate(c: number, s: number): Mat4 {
-    return [
-      [c, 0, s, 0],
-      [0, 1, 0, 0],
-      [-s, 0, c, 0],
-      [0, 0, 0, 1],
-    ];
-  }
-  private getRotate(angleInDegree: number, direction: Direction): Mat4 {
-    const angleInRadian = this.degreeToRadian(angleInDegree);
-    const c = Math.cos(angleInRadian);
-    const s = Math.sin(angleInRadian);
-    if (direction === "X") {
-      return this.getXRotate(c, s);
-    } else if (direction === "Y") {
-      return this.getYRotate(c, s);
-    } else {
-      return this.getZRotate(c, s);
-    }
-  }
-  private getScale(x: number, y: number, z: number): Mat4 {
-    return [
-      [x, 0, 0, 0],
-      [0, y, 0, 0],
-      [0, 0, z, 0],
-      [0, 0, 0, 1],
-    ];
-  }
+  // Convert Degree To Radian
   degreeToRadian(angle: number) {
     return Math.PI * (angle / 180);
   }
-  setIdentity() {
-    this._elements = this.getIdentity();
-  }
-  setTranslate(x: number, y: number, z: number) {
-    this._elements = this.getTranslate(x, y, z);
-  }
-  setRotate(angleInDegree: number, direction: Direction) {
-    this._elements = this.getRotate(angleInDegree, direction);
-  }
-  setScale(x: number, y: number, z: number) {
-    this._elements = this.getScale(x, y, z);
-  }
+  // Multiply
   private multiply(a: Mat4, b: Mat4): Mat4 {
     const {
       "0": { "0": a00, "1": a01, "2": a02, "3": a03 },
@@ -180,8 +110,72 @@ class Matrix4 {
       ],
     ];
   }
+  // Identity
+  private getIdentity(): Mat4 {
+    return [
+      [1, 0, 0, 0],
+      [0, 1, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1],
+    ];
+  }
+  setIdentity() {
+    this._elements = this.getIdentity();
+  }
+  // Translate
+  private getTranslate(x: number, y: number, z: number): Mat4 {
+    return [
+      [1, 0, 0, 0],
+      [0, 1, 0, 0],
+      [0, 0, 1, 0],
+      [x, y, z, 1],
+    ];
+  }
+  setTranslate(x: number, y: number, z: number) {
+    this._elements = this.getTranslate(x, y, z);
+  }
   translate(x: number, y: number, z: number) {
     this._elements = this.multiply(this._elements, this.getTranslate(x, y, z));
+  }
+  // Rotation
+  private getZRotate(c: number, s: number): Mat4 {
+    return [
+      [c, s, 0, 0],
+      [-s, c, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1],
+    ];
+  }
+  private getXRotate(c: number, s: number): Mat4 {
+    return [
+      [1, 0, 0, 0],
+      [0, c, s, 0],
+      [0, -s, c, 0],
+      [0, 0, 0, 1],
+    ];
+  }
+  private getYRotate(c: number, s: number): Mat4 {
+    return [
+      [c, 0, s, 0],
+      [0, 1, 0, 0],
+      [-s, 0, c, 0],
+      [0, 0, 0, 1],
+    ];
+  }
+  private getRotate(angleInDegree: number, direction: Direction): Mat4 {
+    const angleInRadian = this.degreeToRadian(angleInDegree);
+    const c = Math.cos(angleInRadian);
+    const s = Math.sin(angleInRadian);
+    if (direction === "X") {
+      return this.getXRotate(c, s);
+    } else if (direction === "Y") {
+      return this.getYRotate(c, s);
+    } else {
+      return this.getZRotate(c, s);
+    }
+  }
+  setRotate(angleInDegree: number, direction: Direction) {
+    this._elements = this.getRotate(angleInDegree, direction);
   }
   rotate(angleInDegree: number, direction: Direction) {
     this._elements = this.multiply(
@@ -189,33 +183,97 @@ class Matrix4 {
       this.getRotate(angleInDegree, direction)
     );
   }
+  // Scale
+  private getScale(x: number, y: number, z: number): Mat4 {
+    return [
+      [x, 0, 0, 0],
+      [0, y, 0, 0],
+      [0, 0, z, 0],
+      [0, 0, 0, 1],
+    ];
+  }
+  setScale(x: number, y: number, z: number) {
+    this._elements = this.getScale(x, y, z);
+  }
   scale(x: number, y: number, z: number) {
     this._elements = this.multiply(this._elements, this.getScale(x, y, z));
   }
+  // Look At
   private getLookAt(eye: Point3, at: Point3, up: Point3): Mat4 {
     const f = new Vector3();
     f.makeVector(eye, at);
     f.normalize();
-
-    let s = f.crossProduct(new Vector3(up.x, up.y, up.z));
+    const s = f.crossProduct(new Vector3(up.x, up.y, up.z));
     s.normalize();
-
-    let u = s.crossProduct(new Vector3(f.x, f.y, f.z));
-
-    return [
-      [s.x, u.x, -f.x, 0],
-      [s.y, u.y, -f.y, 0],
-      [s.z, u.z, -f.z, 0],
-      [0, 0, 0, 1],
-    ];
-  }
-  setLookAt(eye: Point3, at: Point3, up: Point3) {
-    this._elements = this.multiply(
-      this.getLookAt(eye, at, up),
+    const u = s.crossProduct(new Vector3(f.x, f.y, f.z));
+    return this.multiply(
+      [
+        [s.x, u.x, -f.x, 0],
+        [s.y, u.y, -f.y, 0],
+        [s.z, u.z, -f.z, 0],
+        [0, 0, 0, 1],
+      ],
       this.getTranslate(-eye.x, -eye.y, -eye.z)
     );
   }
-  lookAt() {}
+  setLookAt(eye: Point3, at: Point3, up: Point3) {
+    this._elements = this.getLookAt(eye, at, up);
+  }
+  lookAt(eye: Point3, at: Point3, up: Point3) {
+    this._elements = this.multiply(this._elements, this.getLookAt(eye, at, up));
+  }
+  // Orthographic Projection
+  private getOrthographicProjection(
+    left: number,
+    right: number,
+    bottom: number,
+    top: number,
+    near: number,
+    far: number
+  ): Mat4 {
+    if (left === right || bottom === top || near === far) {
+      throw new Error(`null frustum`);
+    }
+    const rw = 1 / (right - left),
+      rh = 1 / (top - bottom),
+      rd = 1 / (far - near);
+    return [
+      [2 * rw, 0, 0, 0],
+      [0, 2 * rh, 0, 0],
+      [0, 0, -2 * rd, 0],
+      [-(right + left) * rw, -(top + bottom) * rh, -(far + near) * rd, 1],
+    ];
+  }
+  setOrthographicProjection(
+    left: number,
+    right: number,
+    bottom: number,
+    top: number,
+    near: number,
+    far: number
+  ) {
+    this._elements = this.getOrthographicProjection(
+      left,
+      right,
+      bottom,
+      top,
+      near,
+      far
+    );
+  }
+  orthographicProjection(
+    left: number,
+    right: number,
+    bottom: number,
+    top: number,
+    near: number,
+    far: number
+  ) {
+    this._elements = this.multiply(
+      this._elements,
+      this.getOrthographicProjection(left, right, bottom, top, near, far)
+    );
+  }
 }
 
 export { Matrix4, Vector3 };
