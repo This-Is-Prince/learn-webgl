@@ -192,9 +192,9 @@ class Matrix4 {
   scale(x: number, y: number, z: number) {
     this._elements = this.multiply(this._elements, this.getScale(x, y, z));
   }
-  private getLookAt(eye: Point3, target: Point3, up: Point3): Mat4 {
+  private getLookAt(eye: Point3, at: Point3, up: Point3): Mat4 {
     const f = new Vector3();
-    f.makeVector(eye, target);
+    f.makeVector(eye, at);
     f.normalize();
 
     let s = f.crossProduct(new Vector3(up.x, up.y, up.z));
@@ -209,9 +209,9 @@ class Matrix4 {
       [0, 0, 0, 1],
     ];
   }
-  setLookAt(eye: Point3, center: Point3, up: Point3) {
+  setLookAt(eye: Point3, at: Point3, up: Point3) {
     this._elements = this.multiply(
-      this.getLookAt(eye, center, up),
+      this.getLookAt(eye, at, up),
       this.getTranslate(-eye.x, -eye.y, -eye.z)
     );
   }

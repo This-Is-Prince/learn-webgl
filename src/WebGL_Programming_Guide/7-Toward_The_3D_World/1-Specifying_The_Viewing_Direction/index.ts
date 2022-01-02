@@ -67,7 +67,7 @@ const lookAtTriangles = () => {
     // Second vertex
     -0.5, 0.4, -0.2, 1.0, 1.0, 0.4,
     // Third vertex
-    0.5, -0.6, -0.2, 1.0, 1.0, 0.4,
+    0, -0.6, -0.2, 1.0, 1.0, 0.4,
 
     // The Front blue Triangle
     // First vertex
@@ -100,11 +100,32 @@ const lookAtTriangles = () => {
    */
   const u_ViewMatrix = gl.getUniformLocation(program, "u_ViewMatrix");
   const viewMatrix = new Matrix4();
-  viewMatrix.setLookAt(
-    { x: 0.2, y: 0.25, z: 0.25 },
-    { x: 0, y: 0, z: 0 },
-    { x: 0, y: 1, z: 0 }
-  );
+  const eye = { x: 0.2, y: 0.25, z: 0.25 },
+    at = { x: 0, y: 0, z: 0 },
+    up = { x: 0, y: 1, z: 0 };
+  viewMatrix.setLookAt(eye, at, up);
+
+  /**
+   * u_ModelMatrix
+   */
+  const u_ModelMatrix = gl.getUniformLocation(program, "u_ModelMatrix");
+  const modelMatrix = new Matrix4();
+  modelMatrix.setRotate(-10, "Z");
+
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key === "ArrowRight") {
+      eye.x += 0.01;
+    } else if (ev.key === "ArrowLeft") {
+      eye.x -= 0.01;
+    } else {
+      return;
+    }
+    viewMatrix.setLookAt(eye, at, up);
+
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements());
+    gl.drawArrays(gl.TRIANGLES, 0, 9);
+  });
 
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0, 0, 0, 1);
@@ -119,5 +140,6 @@ const lookAtTriangles = () => {
   gl.enableVertexAttribArray(a_Color);
 
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements());
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
   gl.drawArrays(gl.TRIANGLES, 0, 9);
 };
