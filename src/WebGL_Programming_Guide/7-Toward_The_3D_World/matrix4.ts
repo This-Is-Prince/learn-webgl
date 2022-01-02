@@ -274,6 +274,42 @@ class Matrix4 {
       this.getOrthographicProjection(left, right, bottom, top, near, far)
     );
   }
+  // Perspective Projection
+  private getPerspectiveProjection(
+    fov: number,
+    aspect: number,
+    near: number,
+    far: number
+  ): Mat4 {
+    fov = this.degreeToRadian(fov);
+    const f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
+    const rangeInv = 1.0 / (near - far);
+    return [
+      [f / aspect, 0, 0, 0],
+      [0, f, 0, 0],
+      [0, 0, (near + far) * rangeInv, -1],
+      [0, 0, near * far * rangeInv * 2, 0],
+    ];
+  }
+  setPerspectiveProjection(
+    fov: number,
+    aspect: number,
+    near: number,
+    far: number
+  ) {
+    this._elements = this.getPerspectiveProjection(fov, aspect, near, far);
+  }
+  perspectiveProjection(
+    fov: number,
+    aspect: number,
+    near: number,
+    far: number
+  ) {
+    this._elements = this.multiply(
+      this._elements,
+      this.getPerspectiveProjection(fov, aspect, near, far)
+    );
+  }
 }
 
-export { Matrix4, Vector3 };
+export { Matrix4, Vector3, Point3 };
