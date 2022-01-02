@@ -52,32 +52,83 @@ const lookAtTriangles = () => {
   /**
    * Vertices
    */
+  //   const vertices = new Float32Array([
+  //     // Three Triangles on the Right Side
+  //     // 1 - The Green Triangle in back
+  //     // First vertex
+  //     0.75, 1.0, -4.0, 0.4, 1.0, 0.4,
+  //     // second vertex
+  //     0.25, -1.0, -4.0, 0.4, 1.0, 0.4,
+  //     // third vertex
+  //     1.25, -1.0, -4.0, 1.0, 0.4, 0.4,
+
+  //     // 2 - The Yellow Triangle in middle
+  //     // First vertex
+  //     0.75, 1.0, -2.0, 1.0, 1.0, 0.4,
+  //     // second vertex
+  //     0.25, -1.0, -2.0, 1.0, 1.0, 0.4,
+  //     // third vertex
+  //     1.25, -1.0, -2.0, 1.0, 0.4, 0.4,
+
+  //     // 3 - The blue Triangle in front
+  //     // First vertex
+  //     0.75, 1.0, 0.0, 0.4, 0.4, 1.0,
+  //     // second vertex
+  //     0.25, -1.0, 0.0, 0.4, 0.4, 1.0,
+  //     // third vertex
+  //     1.25, -1.0, 0.0, 1.0, 0.4, 0.4,
+
+  //     // Three Triangles on the Left Side
+  //     // 1 - The Green Triangle in back
+  //     // First vertex
+  //     -0.75, 1.0, -4.0, 0.4, 1.0, 0.4,
+  //     // second vertex
+  //     -1.25, -1.0, -4.0, 0.4, 1.0, 0.4,
+  //     // third vertex
+  //     -0.25, -1.0, -4.0, 1.0, 0.4, 0.4,
+
+  //     // 2 - The Yellow Triangle in middle
+  //     // First vertex
+  //     -0.75, 1.0, -2.0, 1.0, 1.0, 0.4,
+  //     // second vertex
+  //     -1.25, -1.0, -2.0, 1.0, 1.0, 0.4,
+  //     // third vertex
+  //     -0.25, -1.0, -2.0, 1.0, 0.4, 0.4,
+
+  //     // 3 - The blue Triangle in front
+  //     // First vertex
+  //     -0.75, 1.0, 0.0, 0.4, 0.4, 1.0,
+  //     // second vertex
+  //     -1.25, -1.0, 0.0, 0.4, 0.4, 1.0,
+  //     // third vertex
+  //     -0.25, -1.0, 0.0, 1.0, 0.4, 0.4,
+  //   ]);
+
   const vertices = new Float32Array([
     // The Back Green Triangle
     // First vertex
-    0.0, 0.6, -0.4, 0.4, 1.0, 0.4,
+    0.0, 1.0, -4.0, 0.4, 1.0, 0.4,
     // Second vertex
-    -0.5, -0.4, -0.4, 0.4, 1.0, 0.4,
+    -0.5, -1.0, -4.0, 0.4, 1.0, 0.4,
     // Third vertex
-    0.5, -0.4, -0.4, 1.0, 0.4, 0.4,
+    0.5, -1.0, -4.0, 1.0, 0.4, 0.4,
 
     // The Middle Yellow Triangle
     // First vertex
-    0.5, 0.4, -0.2, 1.0, 0.4, 0.4,
+    0.0, 1.0, -2.0, 1.0, 1.0, 0.4,
     // Second vertex
-    -0.5, 0.4, -0.2, 1.0, 1.0, 0.4,
+    -0.5, -1.0, -2.0, 1.0, 1.0, 0.4,
     // Third vertex
-    0, -0.6, -0.2, 1.0, 1.0, 0.4,
+    0.5, -1.0, -2.0, 1.0, 0.4, 0.4,
 
     // The Front blue Triangle
     // First vertex
-    0.0, 0.5, 0.0, 0.4, 0.4, 1.0,
+    0.0, 1.0, 0.0, 0.4, 0.4, 1.0,
     // Second vertex
-    -0.5, -0.5, 0.0, 0.4, 0.4, 1.0,
+    -0.5, -1.0, 0.0, 0.4, 0.4, 1.0,
     // Third vertex
-    0.5, -0.5, 0.0, 1.0, 0.4, 0.4,
+    0.5, -1.0, 0.0, 1.0, 0.4, 0.4,
   ]);
-
   /**
    * Buffer
    */
@@ -96,6 +147,23 @@ const lookAtTriangles = () => {
   const a_Color = gl.getAttribLocation(program, "a_Color");
 
   /**
+   * u_ModelMatrix
+   */
+  const u_ModelMatrix = gl.getUniformLocation(program, "u_ModelMatrix");
+  const modelMatrix = new Matrix4();
+  modelMatrix.setTranslate(0.75, 0, 0);
+
+  /**
+   * u_ViewMatrix
+   */
+  const u_ViewMatrix = gl.getUniformLocation(program, "u_ViewMatrix");
+  const viewMatrix = new Matrix4();
+  const eye: Point3 = { x: 0, y: 0, z: 5 },
+    at: Point3 = { x: 0, y: 0, z: -100 },
+    up: Point3 = { x: 0, y: 1, z: 0 };
+  viewMatrix.setLookAt(eye, at, up);
+
+  /**
    * u_ProjectionMatrix
    */
   const u_ProjectionMatrix = gl.getUniformLocation(
@@ -103,35 +171,12 @@ const lookAtTriangles = () => {
     "u_ProjectionMatrix"
   );
   const projectionMatrix = new Matrix4();
-  projectionMatrix.setOrthographicProjection(-1, 1, -1, 1, 0.0, 2.0);
-
-  /**
-   * u_ViewMatrix
-   */
-  const u_ViewMatrix = gl.getUniformLocation(program, "u_ViewMatrix");
-  const viewMatrix = new Matrix4();
-  const eye: Point3 = { x: 0, y: 0, z: 0 },
-    at: Point3 = { x: 0, y: 0, z: -1 },
-    up: Point3 = { x: 0, y: 1, z: 0 };
-  viewMatrix.setLookAt(eye, at, up);
-
-  document.addEventListener("keydown", function (ev) {
-    switch (ev.key) {
-      case "ArrowRight":
-        break;
-      case "ArrowLeft":
-        break;
-      case "ArrowUp":
-        break;
-      case "ArrowDown":
-        break;
-      default:
-        return;
-    }
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix.elements());
-    gl.drawArrays(gl.TRIANGLES, 0, 9);
-  });
+  projectionMatrix.setPerspectiveProjection(
+    30,
+    gl.canvas.width / gl.canvas.height,
+    1.0,
+    100
+  );
 
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   gl.clearColor(0, 0, 0, 1);
@@ -147,5 +192,11 @@ const lookAtTriangles = () => {
 
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix.elements());
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements());
+
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
+  gl.drawArrays(gl.TRIANGLES, 0, 9);
+
+  modelMatrix.setTranslate(-0.75, 0, 0);
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
   gl.drawArrays(gl.TRIANGLES, 0, 9);
 };
