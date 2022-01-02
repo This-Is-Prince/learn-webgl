@@ -48,23 +48,41 @@ const lookAtTriangles = () => {
    * Program
    */
   const program = createProgram(gl, vertexShader, fragmentShader);
+  const colors = new Float32Array([
+    // First Vertex
+    1.0, 1.0, 1.0,
+    // Second Vertex
+    1.0, 0.0, 1.0,
+    // Third Vertex
+    1.0, 0.0, 0.0,
+    // Fourth Vertex
+    1.0, 1.0, 0.0,
+    // Fifth Vertex
+    0.0, 1.0, 0.0,
+    // Six Vertex
+    0.0, 1.0, 1.0,
+    // Seventh Vertex
+    0.0, 0.0, 1.0,
+    // Eight Vertex
+    0.0, 0.0, 0.0,
+  ]);
   const vertices = new Float32Array([
     // First Vertex
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0,
     // Second Vertex
-    -1.0, 1.0, 1.0, 1.0, 0.0, 1.0,
+    -1.0, 1.0, 1.0,
     // Third Vertex
-    -1.0, -1.0, 1.0, 1.0, 0.0, 0.0,
+    -1.0, -1.0, 1.0,
     // Fourth Vertex
-    1.0, -1.0, 1.0, 1.0, 1.0, 0.0,
+    1.0, -1.0, 1.0,
     // Fifth Vertex
-    1.0, -1.0, -1.0, 0.0, 1.0, 0.0,
+    1.0, -1.0, -1.0,
     // Six Vertex
-    1.0, 1.0, -1.0, 0.0, 1.0, 1.0,
+    1.0, 1.0, -1.0,
     // Seventh Vertex
-    -1.0, 1.0, -1.0, 0.0, 0.0, 1.0,
+    -1.0, 1.0, -1.0,
     // Eight Vertex
-    -1.0, -1.0, -1.0, 0.0, 0.0, 0.0,
+    -1.0, -1.0, -1.0,
   ]);
 
   const indices = new Uint8Array([
@@ -85,6 +103,9 @@ const lookAtTriangles = () => {
   /**
    * Buffer
    */
+  const colorsBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorsBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
   const verticesBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
@@ -157,11 +178,13 @@ const lookAtTriangles = () => {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.useProgram(program);
 
-  const FSIZE = vertices.BYTES_PER_ELEMENT;
-  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 6, 0);
+  //   const FSIZE = vertices.BYTES_PER_ELEMENT;
+  gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
+  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(a_Position);
 
-  gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorsBuffer);
+  gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(a_Color);
 
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix.elements());
