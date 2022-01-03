@@ -231,7 +231,7 @@ class Matrix4 {
     near: number,
     far: number
   ): Mat4 {
-    if (left === right || bottom === top || near === far) {
+    if (left >= right || bottom >= top || near >= far) {
       throw new Error(`null frustum`);
     }
     const rw = 1 / (right - left),
@@ -281,6 +281,15 @@ class Matrix4 {
     near: number,
     far: number
   ): Mat4 {
+    if (near >= far) {
+      throw new Error(`near must be less than far`);
+    }
+    if (aspect <= 0) {
+      throw new Error(`aspect ratio can't be negative or zero`);
+    }
+    if (fov <= 0 || fov >= 180) {
+      throw new Error(`fov can't be negative , zero and greater than 180`);
+    }
     fov = this.degreeToRadian(fov);
     const f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
     const rangeInv = 1.0 / (near - far);
