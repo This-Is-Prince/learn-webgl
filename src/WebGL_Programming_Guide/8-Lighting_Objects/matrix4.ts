@@ -71,6 +71,15 @@ class Matrix4 {
       [0, 0, 0, 1],
     ];
   }
+  // Copy
+  copy(m: Matrix4) {
+    this._elements = [
+      [...m._elements[0]],
+      [...m._elements[1]],
+      [...m._elements[2]],
+      [...m._elements[3]],
+    ];
+  }
   // Convert Degree To Radian
   degreeToRadian(angle: number) {
     return Math.PI * (angle / 180);
@@ -503,9 +512,7 @@ class Matrix4 {
     ]);
 
     let determinant =
-      m00 * inv[0][0] + m01 * inv[1][0] + m02 * inv[2][0] + m03 * inv[3][0];
-    // let determinant =
-    //   m00 * inv[0][0] + m01 * inv[0][1] + m02 * inv[0][2] + m03 * inv[0][3];
+      m00 * inv[0][0] + m01 * inv[0][1] + m02 * inv[0][2] + m03 * inv[0][3];
     if (determinant === 0) {
       return inv;
     }
@@ -518,6 +525,8 @@ class Matrix4 {
     return invMatrix;
   }
   setInverseOf(m: Matrix4) {
+    // first transpose matrix because column major order of matrix
+    m.transpose();
     this._elements = this.getInverseOf(m._elements);
   }
 }

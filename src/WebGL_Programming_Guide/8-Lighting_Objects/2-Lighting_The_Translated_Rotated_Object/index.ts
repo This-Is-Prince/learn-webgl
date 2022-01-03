@@ -150,30 +150,28 @@ const lightedTranslatedRotatedCube = () => {
   //   modelMatrix.setTranslate(0, 0.9, 0);
   //   modelMatrix.rotate(90, "Z");
 
-  canvas.addEventListener("mousemove", function (ev) {
-    let { x, y } = ev;
-    const { clientHeight, clientWidth } = this;
-    // x = (x / clientWidth) * 2 - 1;
-    // y = (y / clientHeight) * 2 - 1;
-    x /= clientWidth;
-    y /= clientHeight;
-    x *= 360;
-    y *= 360;
-    modelMatrix.setRotate(x, "Y");
-    modelMatrix.rotate(y, "X");
-    gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
-    normalMatrix.setInverseOf(modelMatrix);
-    normalMatrix.transpose();
-    gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements());
-  });
+  // canvas.addEventListener("mousemove", function (ev) {
+  //   let { x, y } = ev;
+  //   const { clientHeight, clientWidth } = this;
+  //   // x = (x / clientWidth) * 2 - 1;
+  //   // y = (y / clientHeight) * 2 - 1;
+  //   x /= clientWidth;
+  //   y /= clientHeight;
+  //   x *= 360;
+  //   y *= 360;
+  //   modelMatrix.setRotate(x, "Y");
+  //   modelMatrix.rotate(y, "X");
+  //   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
+  //   normalMatrix.transpose();
+  //   normalMatrix.setInverseOf(modelMatrix);
+  //   gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements());
+  // });
 
   /**
    * u_NormalMatrix
    */
   const u_NormalMatrix = gl.getUniformLocation(program, "u_NormalMatrix");
   const normalMatrix = new Matrix4();
-  normalMatrix.setInverseOf(modelMatrix);
-  normalMatrix.transpose();
 
   /**
    * Lights
@@ -212,7 +210,8 @@ const lightedTranslatedRotatedCube = () => {
     const diff = currTime - prevTime;
     prevTime = currTime;
     angle += 36 * diff * 0.001;
-    modelMatrix.setRotate(angle, "X");
+    modelMatrix.setRotate(angle, "Y");
+    modelMatrix.rotate(angle, "X");
     angle %= 360;
 
     gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
