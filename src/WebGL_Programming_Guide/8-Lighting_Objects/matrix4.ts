@@ -281,6 +281,9 @@ class Matrix4 {
     near: number,
     far: number
   ): Mat4 {
+    if (near <= 0 || far <= 0) {
+      throw new Error(`near , far must be greater than 0`);
+    }
     if (near >= far) {
       throw new Error(`near must be less than far`);
     }
