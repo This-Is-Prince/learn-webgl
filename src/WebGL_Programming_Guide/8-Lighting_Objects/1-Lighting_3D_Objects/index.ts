@@ -177,7 +177,7 @@ const lookAtTriangles = () => {
   projectionMatrix.setPerspectiveProjection(
     30,
     canvas.width / canvas.height,
-    1,
+    0.1,
     100
   );
 
@@ -186,7 +186,12 @@ const lookAtTriangles = () => {
    */
   const u_MVPMatrix = gl.getUniformLocation(program, "u_MVPMatrix");
   const mvpMatrix = new Matrix4();
-  mvpMatrix.setPerspectiveProjection(30, canvas.width / canvas.height, 1, 100);
+  mvpMatrix.setPerspectiveProjection(
+    30,
+    canvas.width / canvas.height,
+    0.1,
+    100
+  );
   mvpMatrix.lookAt(eye, at, up);
 
   gl.clearColor(0, 0, 0, 1);
