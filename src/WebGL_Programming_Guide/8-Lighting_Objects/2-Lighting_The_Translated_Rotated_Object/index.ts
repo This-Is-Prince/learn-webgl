@@ -117,21 +117,36 @@ const lightedTranslatedRotatedCube = () => {
   initBuffer(gl, program, 3, normals, "a_Normal");
 
   /**
-   * u_MVPMatrix
+   * u_ProjectionMatrix
    */
-  const u_MVPMatrix = gl.getUniformLocation(program, "u_MVPMatrix");
-  const mvpMatrix = new Matrix4();
-  mvpMatrix.setPerspectiveProjection(
+  const u_ProjectionMatrix = gl.getUniformLocation(
+    program,
+    "u_ProjectionMatrix"
+  );
+  const projectionMatrix = new Matrix4();
+  projectionMatrix.setPerspectiveProjection(
     30,
     gl.canvas.width / gl.canvas.height,
     0.1,
     100
   );
-  mvpMatrix.lookAt(
+
+  /**
+   * u_ViewMatrix
+   */
+  const u_ViewMatrix = gl.getUniformLocation(program, "u_ViewMatrix");
+  const viewMatrix = new Matrix4();
+  viewMatrix.lookAt(
     { x: 3, y: 3, z: 7 },
     { x: 0, y: 0, z: 0 },
     { x: 0, y: 1, z: 0 }
   );
+
+  /**
+   * u_ModelMatrix
+   */
+  const u_ModelMatrix = gl.getUniformLocation(program, "u_ModelMatrix");
+  const modelMatrix = new Matrix4();
 
   /**
    * Lights
@@ -154,7 +169,9 @@ const lightedTranslatedRotatedCube = () => {
   gl.uniform3f(u_DirectionalLightColor, 1.0, 1.0, 1.0);
   gl.uniform3f(u_AmbientLightColor, 0.2, 0.2, 0.2);
   gl.uniform3fv(u_DirectionalLightDirection, [dir.x, dir.y, dir.z]);
-  gl.uniformMatrix4fv(u_MVPMatrix, false, mvpMatrix.elements());
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
+  gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements());
+  gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix.elements());
 
   const indexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
