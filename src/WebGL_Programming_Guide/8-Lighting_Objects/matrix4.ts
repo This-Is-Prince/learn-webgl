@@ -4,6 +4,12 @@ type Mat4 = [
   [number, number, number, number],
   [number, number, number, number]
 ];
+type Mat2 = [[number, number], [number, number]];
+type Mat3 = [
+  [number, number, number],
+  [number, number, number],
+  [number, number, number]
+];
 type Direction = "X" | "Y" | "Z";
 
 type Point3 = {
@@ -321,6 +327,194 @@ class Matrix4 {
       this._elements,
       this.getPerspectiveProjection(fov, aspect, near, far)
     );
+  }
+  // Transpose
+  transpose() {
+    const {
+      "0": { "0": elm_00, "1": elm_01, "2": elm_02, "3": elm_03 },
+      "1": { "0": elm_10, "1": elm_11, "2": elm_12, "3": elm_13 },
+      "2": { "0": elm_20, "1": elm_21, "2": elm_22, "3": elm_23 },
+      "3": { "0": elm_30, "1": elm_31, "2": elm_32, "3": elm_33 },
+    } = this._elements;
+    this._elements = [
+      [elm_00, elm_10, elm_20, elm_30],
+      [elm_01, elm_11, elm_21, elm_31],
+      [elm_02, elm_12, elm_22, elm_32],
+      [elm_03, elm_13, elm_23, elm_33],
+    ];
+  }
+  // Determinant
+  getDeterminantOf2x2(m: Mat2) {
+    const {
+      "0": { "0": m00, "1": m01 },
+      "1": { "0": m10, "1": m11 },
+    } = m;
+    return m00 * m11 - m10 * m01;
+  }
+  getDeterminantOf3x3(m: Mat3) {
+    const {
+      "0": { "0": m00, "1": m01, "2": m02 },
+      "1": { "0": m10, "1": m11, "2": m12 },
+      "2": { "0": m20, "1": m21, "2": m22 },
+    } = m;
+    return (
+      m00 *
+        this.getDeterminantOf2x2([
+          [m11, m12],
+          [m21, m22],
+        ]) -
+      m01 *
+        this.getDeterminantOf2x2([
+          [m10, m12],
+          [m20, m22],
+        ]) +
+      m02 *
+        this.getDeterminantOf2x2([
+          [m10, m11],
+          [m20, m21],
+        ])
+    );
+  }
+  getDeterminantOf4x4(m: Mat4) {
+    const {
+      "0": { "0": m00, "1": m01, "2": m02, "3": m03 },
+      "1": { "0": m10, "1": m11, "2": m12, "3": m13 },
+      "2": { "0": m20, "1": m21, "2": m22, "3": m23 },
+      "3": { "0": m30, "1": m31, "2": m32, "3": m33 },
+    } = m;
+    return (
+      m00 *
+        this.getDeterminantOf3x3([
+          [m11, m12, m13],
+          [m21, m22, m23],
+          [m31, m32, m33],
+        ]) -
+      m01 *
+        this.getDeterminantOf3x3([
+          [m10, m12, m13],
+          [m20, m22, m23],
+          [m30, m32, m33],
+        ]) +
+      m02 *
+        this.getDeterminantOf3x3([
+          [m10, m11, m13],
+          [m20, m21, m23],
+          [m30, m31, m33],
+        ]) -
+      m03 *
+        this.getDeterminantOf3x3([
+          [m10, m11, m12],
+          [m20, m21, m22],
+          [m30, m31, m32],
+        ])
+    );
+  }
+  // Inverse Of A Matrix
+  getInverse(m: Mat4) {
+    const {
+      "0": { "0": m00, "1": m01, "2": m02, "3": m03 },
+      "1": { "0": m10, "1": m11, "2": m12, "3": m13 },
+      "2": { "0": m20, "1": m21, "2": m22, "3": m23 },
+      "3": { "0": m30, "1": m31, "2": m32, "3": m33 },
+    } = m;
+    const inv = this.getIdentity();
+    inv[0][0] = this.getDeterminantOf3x3([
+      [m11, m12, m13],
+      [m21, m22, m23],
+      [m31, m32, m33],
+    ]);
+    inv[1][0] = this.getDeterminantOf3x3([
+      [m01, m02, m03],
+      [m21, m22, m23],
+      [m31, m32, m33],
+    ]);
+    inv[2][0] = this.getDeterminantOf3x3([
+      [m01, m02, m03],
+      [m11, m12, m13],
+      [m31, m32, m33],
+    ]);
+    inv[3][0] = this.getDeterminantOf3x3([
+      [m01, m02, m03],
+      [m11, m12, m13],
+      [m21, m22, m23],
+    ]);
+
+    inv[0][1] = -this.getDeterminantOf3x3([
+      [m10, m12, m13],
+      [m20, m22, m23],
+      [m30, m32, m33],
+    ]);
+    inv[1][1] = -this.getDeterminantOf3x3([
+      [m00, m02, m03],
+      [m20, m22, m23],
+      [m30, m32, m33],
+    ]);
+    inv[2][1] = -this.getDeterminantOf3x3([
+      [m00, m02, m03],
+      [m10, m12, m13],
+      [m30, m32, m33],
+    ]);
+    inv[3][1] = -this.getDeterminantOf3x3([
+      [m00, m02, m03],
+      [m10, m12, m13],
+      [m20, m22, m23],
+    ]);
+
+    inv[0][2] = this.getDeterminantOf3x3([
+      [m10, m11, m13],
+      [m20, m21, m23],
+      [m30, m31, m33],
+    ]);
+    inv[1][2] = this.getDeterminantOf3x3([
+      [m00, m01, m03],
+      [m20, m21, m23],
+      [m30, m31, m33],
+    ]);
+    inv[2][2] = this.getDeterminantOf3x3([
+      [m00, m01, m03],
+      [m10, m11, m13],
+      [m30, m31, m33],
+    ]);
+    inv[3][2] = this.getDeterminantOf3x3([
+      [m00, m01, m03],
+      [m10, m11, m13],
+      [m20, m21, m23],
+    ]);
+
+    inv[0][3] = -this.getDeterminantOf3x3([
+      [m10, m11, m12],
+      [m20, m21, m22],
+      [m30, m31, m32],
+    ]);
+    inv[1][3] = -this.getDeterminantOf3x3([
+      [m00, m01, m02],
+      [m20, m21, m22],
+      [m30, m31, m32],
+    ]);
+    inv[2][3] = -this.getDeterminantOf3x3([
+      [m00, m01, m02],
+      [m10, m11, m12],
+      [m30, m31, m32],
+    ]);
+    inv[3][3] = -this.getDeterminantOf3x3([
+      [m00, m01, m02],
+      [m10, m11, m12],
+      [m20, m21, m22],
+    ]);
+
+    let determinant =
+      m00 * inv[0][0] + m01 * inv[1][0] + m02 * inv[2][0] + m03 * inv[3][0];
+    if (determinant === 0) {
+      this._elements = inv;
+      return;
+    }
+    determinant = 1 / determinant;
+    const invMatrix = inv.map((row) => {
+      return row.map((elm) => {
+        return elm * determinant;
+      });
+    }) as Mat4;
+    this._elements = invMatrix;
   }
 }
 
