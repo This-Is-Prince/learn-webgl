@@ -410,7 +410,7 @@ class Matrix4 {
     );
   }
   // Inverse Of A Matrix
-  getInverse(m: Mat4) {
+  getInverseOf(m: Mat4) {
     const {
       "0": { "0": m00, "1": m01, "2": m02, "3": m03 },
       "1": { "0": m10, "1": m11, "2": m12, "3": m13 },
@@ -504,9 +504,10 @@ class Matrix4 {
 
     let determinant =
       m00 * inv[0][0] + m01 * inv[1][0] + m02 * inv[2][0] + m03 * inv[3][0];
+    // let determinant =
+    //   m00 * inv[0][0] + m01 * inv[0][1] + m02 * inv[0][2] + m03 * inv[0][3];
     if (determinant === 0) {
-      this._elements = inv;
-      return;
+      return inv;
     }
     determinant = 1 / determinant;
     const invMatrix = inv.map((row) => {
@@ -514,7 +515,10 @@ class Matrix4 {
         return elm * determinant;
       });
     }) as Mat4;
-    this._elements = invMatrix;
+    return invMatrix;
+  }
+  setInverseOf(m: Matrix4) {
+    this._elements = this.getInverseOf(m._elements);
   }
 }
 
