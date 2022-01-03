@@ -161,7 +161,7 @@ const lookAtTriangles = () => {
    */
   const u_ViewMatrix = gl.getUniformLocation(program, "u_ViewMatrix");
   const viewMatrix = new Matrix4();
-  const eye: Point3 = { x: 2, y: 2, z: 10 },
+  const eye: Point3 = { x: 3, y: 3, z: 7 },
     at: Point3 = { x: 0, y: 0, z: 0 },
     up: Point3 = { x: 0, y: 1, z: 0 };
   viewMatrix.setLookAt(eye, at, up);
@@ -175,11 +175,19 @@ const lookAtTriangles = () => {
   );
   const projectionMatrix = new Matrix4();
   projectionMatrix.setPerspectiveProjection(
-    45,
+    30,
     canvas.width / canvas.height,
     1,
     100
   );
+
+  /**
+   * u_MVPMatrix
+   */
+  const u_MVPMatrix = gl.getUniformLocation(program, "u_MVPMatrix");
+  const mvpMatrix = new Matrix4();
+  mvpMatrix.setPerspectiveProjection(30, canvas.width / canvas.height, 1, 100);
+  mvpMatrix.lookAt(eye, at, up);
 
   gl.clearColor(0, 0, 0, 1);
   gl.enable(gl.DEPTH_TEST);
@@ -201,6 +209,7 @@ const lookAtTriangles = () => {
   gl.enableVertexAttribArray(a_Normal);
 
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements());
+  gl.uniformMatrix4fv(u_MVPMatrix, false, mvpMatrix.elements());
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix.elements());
 
   gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);

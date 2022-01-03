@@ -70,7 +70,7 @@ class Matrix4 {
     return Math.PI * (angle / 180);
   }
   // Multiply
-  private multiply(a: Mat4, b: Mat4): Mat4 {
+  private multiply(b: Mat4, a: Mat4): Mat4 {
     const {
       "0": { "0": a00, "1": a01, "2": a02, "3": a03 },
       "1": { "0": a10, "1": a11, "2": a12, "3": a13 },
