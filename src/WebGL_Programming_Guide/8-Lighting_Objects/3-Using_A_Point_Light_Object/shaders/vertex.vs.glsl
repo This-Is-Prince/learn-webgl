@@ -16,14 +16,11 @@ varying vec4 v_Color;
 
 void main(){
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;
-
     vec3 normalVector = normalize(vec3(u_NormalMatrix * a_Normal));
-
-    float nDotL = max(dot(u_PointLightVector, normalVector), 0.0);
-
+    vec4 vertexPosition = u_ModelMatrix * a_Position;
+    vec3 lightDirection = normalize(u_PointLightVector - vec3(vertexPosition));
+    float nDotL = max(dot(lightDirection, normalVector), 0.0);
     vec3 diffuse = u_PointLightColor * a_Color.rgb * nDotL;
-
     vec3 ambient = u_AmbientLightColor * a_Color.rgb;
-
     v_Color = vec4(diffuse + ambient, a_Color.a);
 }

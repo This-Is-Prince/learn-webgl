@@ -56,12 +56,12 @@ const pointLightCube = () => {
   );
   gl.uniform3f(u_AmbientLightColor, 0.2, 0.2, 0.2);
   const u_PointLightColor = gl.getUniformLocation(program, "u_PointLightColor");
-  gl.uniform3f(u_PointLightColor, 1.0, 0.0, 0.0);
+  gl.uniform3f(u_PointLightColor, 1.0, 1.0, 1.0);
   const u_PointLightVector = gl.getUniformLocation(
     program,
     "u_PointLightVector"
   );
-  const dir = new Vector3(0.5, 3.0, 5.0);
+  const dir = new Vector3(0.0, 3.0, 4.0);
   dir.normalize();
   gl.uniform3f(u_PointLightVector, dir.x, dir.y, dir.z);
 
@@ -87,9 +87,9 @@ const pointLightCube = () => {
 
     // gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements());
 
-    // normalMatrix.setInverseOf(modelMatrix);
-    // normalMatrix.transpose();
-    // gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements());
+    normalMatrix.setInverseOf(modelMatrix);
+    normalMatrix.transpose();
+    gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements());
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_BYTE, 0);
     requestAnimationFrame(tick);

@@ -24,6 +24,7 @@ const initMatrix: InitMatrix = (gl, program, name) => {
     case "u_NormalMatrix":
       break;
     case "u_ModelMatrix":
+      matrix.setRotate(90, "Y");
       break;
     case "u_ProjectionMatrix":
       matrix.setPerspectiveProjection(
