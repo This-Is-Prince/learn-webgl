@@ -1,4 +1,4 @@
-type Mat3 = [
+type Matrix3 = [
   [number, number, number],
   [number, number, number],
   [number, number, number]
@@ -7,7 +7,7 @@ type Mat3 = [
 /**
  * Multiply Function
  */
-type MultiplyFunType = (a: Mat3, b: Mat3) => Mat3;
+type MultiplyFunType = (a: Matrix3, b: Matrix3) => Matrix3;
 const multiply: MultiplyFunType = (a, b) => {
   const {
     "0": { "0": a00, "1": a01, "2": a02 },
@@ -42,7 +42,7 @@ const multiply: MultiplyFunType = (a, b) => {
 /**
  * Identity Function
  */
-type IdentityFunType = () => Mat3;
+type IdentityFunType = () => Matrix3;
 const identity: IdentityFunType = () => {
   return [
     [1, 0, 0],
@@ -54,7 +54,7 @@ const identity: IdentityFunType = () => {
 /**
  * Projection Function
  */
-type ProjectionFunType = (width: number, height: number) => Mat3;
+type ProjectionFunType = (width: number, height: number) => Matrix3;
 const projection: ProjectionFunType = (width, height) => {
   return [
     [2 / width, 0, 0],
@@ -66,7 +66,7 @@ const projection: ProjectionFunType = (width, height) => {
 /**
  * Project Function
  */
-type ProjectFunType = (m: Mat3, width: number, height: number) => Mat3;
+type ProjectFunType = (m: Matrix3, width: number, height: number) => Matrix3;
 const project: ProjectFunType = (m, width, height) => {
   return multiply(m, projection(width, height));
 };
@@ -74,7 +74,7 @@ const project: ProjectFunType = (m, width, height) => {
 /**
  * Translation Function
  */
-type TranslationFunType = (tx: number, ty: number) => Mat3;
+type TranslationFunType = (tx: number, ty: number) => Matrix3;
 const translation: TranslationFunType = (tx, ty) => {
   return [
     [1, 0, 0],
@@ -86,7 +86,7 @@ const translation: TranslationFunType = (tx, ty) => {
 /**
  * Translate Function
  */
-type TranslateFunType = (m: Mat3, tx: number, ty: number) => Mat3;
+type TranslateFunType = (m: Matrix3, tx: number, ty: number) => Matrix3;
 const translate: TranslateFunType = (m, tx, ty) => {
   return multiply(m, translation(tx, ty));
 };
@@ -94,7 +94,7 @@ const translate: TranslateFunType = (m, tx, ty) => {
 /**
  * Rotation Function
  */
-type RotationFunType = (angleInRadians: number) => Mat3;
+type RotationFunType = (angleInRadians: number) => Matrix3;
 const rotation: RotationFunType = (angleInRadians) => {
   const c = Math.cos(angleInRadians);
   const s = Math.sin(angleInRadians);
@@ -108,7 +108,7 @@ const rotation: RotationFunType = (angleInRadians) => {
 /**
  * Rotate Function
  */
-type RotateFunType = (m: Mat3, angleInRadians: number) => Mat3;
+type RotateFunType = (m: Matrix3, angleInRadians: number) => Matrix3;
 const rotate: RotateFunType = (m, angleInRadians) => {
   return multiply(m, rotation(angleInRadians));
 };
@@ -116,7 +116,7 @@ const rotate: RotateFunType = (m, angleInRadians) => {
 /**
  * Scaling Function
  */
-type ScalingFunType = (sx: number, sy: number) => Mat3;
+type ScalingFunType = (sx: number, sy: number) => Matrix3;
 const scaling: ScalingFunType = (sx, sy) => {
   return [
     [sx, 0, 0],
@@ -128,7 +128,7 @@ const scaling: ScalingFunType = (sx, sy) => {
 /**
  * Scale Function
  */
-type ScaleFunType = (m: Mat3, sx: number, sy: number) => Mat3;
+type ScaleFunType = (m: Matrix3, sx: number, sy: number) => Matrix3;
 const scale: ScaleFunType = (m, sx, sy) => {
   return multiply(m, scaling(sx, sy));
 };
@@ -205,7 +205,10 @@ const degToRad: DegToRadFunType = (d) => {
 /**
  * TransformPoint Function
  */
-type TransformPointFunType = (m: Mat3, v: [number, number]) => [number, number];
+type TransformPointFunType = (
+  m: Matrix3,
+  v: [number, number]
+) => [number, number];
 const transformPoint: TransformPointFunType = (m, v) => {
   const v0 = v[0];
   const v1 = v[1];
@@ -219,7 +222,7 @@ const transformPoint: TransformPointFunType = (m, v) => {
 /**
  * Inverse Function
  */
-type InverseFunType = (m: Mat3) => Mat3;
+type InverseFunType = (m: Matrix3) => Matrix3;
 const inverse: InverseFunType = (m) => {
   const t00 = m[2][2] * m[1][1] - m[2][1] * m[1][2];
   const t10 = m[2][2] * m[0][1] - m[2][1] * m[0][2];
