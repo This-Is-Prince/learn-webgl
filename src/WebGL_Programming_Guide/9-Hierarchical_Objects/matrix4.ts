@@ -556,3 +556,4 @@ class Matrix4 {
     return this.setInverseOf(this);
   }
 }
+export { Matrix4, Vector3 };
