@@ -47,6 +47,8 @@ const initializeApp = (
   const program = createProgram(gl, vertexShader, fragmentShader);
 
   gl.useProgram(program);
+  gl.enable(gl.DEPTH_TEST);
+  gl.clearColor(0, 0, 0, 1);
   return { program, gl };
 };
 

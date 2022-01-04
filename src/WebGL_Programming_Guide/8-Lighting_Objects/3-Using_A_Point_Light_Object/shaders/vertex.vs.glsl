@@ -23,7 +23,7 @@ void main(){
 
     vec3 diffuse = u_PointLightColor * a_Color.rgb * nDotL;
 
-    vec3 ambient = u_PointLightColor * a_Color.rgb;
+    vec3 ambient = u_AmbientLightColor * a_Color.rgb;
 
     v_Color = vec4(diffuse + ambient, a_Color.a);
 }
