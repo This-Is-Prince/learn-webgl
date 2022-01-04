@@ -7,6 +7,14 @@ window.addEventListener("load", () => {
   lightedTranslatedRotatedCube();
 });
 
+const updateCanvasResolution = (gl: WebGLRenderingContext) => {
+  const pixelRatio = Math.min(window.devicePixelRatio, 2);
+  const { clientHeight, clientWidth } = gl.canvas;
+  gl.canvas.width = (clientWidth * pixelRatio) | 0;
+  gl.canvas.height = (clientHeight * pixelRatio) | 0;
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+};
+
 const lightedTranslatedRotatedCube = () => {
   /**
    * Canvas
@@ -15,10 +23,6 @@ const lightedTranslatedRotatedCube = () => {
   if (!canvas) {
     throw new Error("canvas element is not retrieve... ");
   }
-  const pixelRatio = Math.min(window.devicePixelRatio, 2);
-  const { clientHeight, clientWidth } = canvas;
-  canvas.width = (clientWidth * pixelRatio) | 0;
-  canvas.height = (clientHeight * pixelRatio) | 0;
 
   /**
    * WebGL Rendering Context
@@ -28,9 +32,20 @@ const lightedTranslatedRotatedCube = () => {
     throw new Error(`webgl is not supported`);
   }
 
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  updateCanvasResolution(gl);
   gl.clearColor(0, 0, 0, 1);
   gl.enable(gl.DEPTH_TEST);
+
+  window.addEventListener("resize", () => {
+    updateCanvasResolution(gl);
+    projectionMatrix.setPerspectiveProjection(
+      30,
+      gl.canvas.width / gl.canvas.height,
+      0.1,
+      100
+    );
+    gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix.elements());
+  });
 
   /**
    * Shaders
