@@ -44,6 +44,8 @@ class Matrix4 {
   private _elements: Float32Array;
   get elements(): Float32Array {
     let j = 0;
+    // console.log(this.mat);
+
     for (let i = 0; i < 16; i += 4) {
       this._elements[i + 0] = this.mat[0][j];
       this._elements[i + 1] = this.mat[1][j];

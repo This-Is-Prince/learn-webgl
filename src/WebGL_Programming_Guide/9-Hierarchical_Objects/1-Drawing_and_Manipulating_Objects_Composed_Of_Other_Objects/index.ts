@@ -103,7 +103,7 @@ const start = () => {
    */
   const u_ModelMatrix = gl.getUniformLocation(program, "u_ModelMatrix");
   const modelMatrix = new Matrix4();
-  modelMatrix.translate(0, 0, 0);
+  //   modelMatrix.translate(0, 0, 0);
 
   /**
    * View Matrix
@@ -121,7 +121,6 @@ const start = () => {
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
   normalMatrix.setInverseOf(modelMatrix);
   normalMatrix.transpose();
-
   gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements);
 
   /**
@@ -144,7 +143,6 @@ const start = () => {
     "u_PointLightPosition"
   );
   const pointLightPosition = new Vector3(0.0, 0.0, 7.0);
-  pointLightPosition.normalize();
   gl.uniform3f(
     u_PointLightPosition,
     pointLightPosition.x,
@@ -155,6 +153,18 @@ const start = () => {
   const indexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+  canvas.addEventListener("mousemove", function (ev) {
+    const { clientX, clientY } = ev;
+    const x = (clientX / gl.canvas.clientWidth) * 2 - 1.0;
+    const y = (clientY / gl.canvas.clientHeight) * 2 - 1.0;
+
+    modelMatrix.setRotate(x * 360, 0, 1, 0).rotate(y * 360, 1, 0, 0);
+    gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+    normalMatrix.setInverseOf(modelMatrix);
+    normalMatrix.transpose();
+    gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements);
+  });
 
   const tick = () => {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
