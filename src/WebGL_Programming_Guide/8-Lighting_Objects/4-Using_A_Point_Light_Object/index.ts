@@ -1,13 +1,16 @@
 import vertexShaderSource from "./shaders/vertex.vs.glsl?raw";
 import fragmentShaderSource from "./shaders/fragment.fs.glsl?raw";
-import { createProgram, createShader } from "../utils";
+import {
+  createProgram,
+  createShader,
+} from "../../9-Hierarchical_Objects/utils";
 import {
   colors,
   indices,
   normals,
   vertices,
-} from "../../8-Lighting_Objects/3-Using_A_Point_Light_Object/vertexData";
-import { Matrix4, Vector3 } from "../matrix4";
+} from "../3-Using_A_Point_Light_Object/vertexData";
+import { Matrix4, Vector3 } from "../../9-Hierarchical_Objects/matrix4";
 
 window.addEventListener("load", () => {
   start();
