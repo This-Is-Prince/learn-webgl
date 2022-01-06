@@ -58,6 +58,13 @@ class Matrix4 {
       this._elements[i + 3] = this.mat[3][j];
       j++;
     }
+    const e = this._elements;
+    console.log(e[0], e[4], e[8], e[12]);
+    console.log(e[1], e[5], e[9], e[13]);
+    console.log(e[2], e[6], e[10], e[14]);
+    console.log(e[3], e[7], e[11], e[15]);
+    console.log("\n");
+
     return this._elements;
   }
   constructor(m?: Mat4) {
@@ -557,6 +564,7 @@ class Matrix4 {
   }
   setInverseOf(m: Matrix4) {
     this.mat = this.getInverseOf(m);
+    this.transpose()
     return this;
   }
   invert() {

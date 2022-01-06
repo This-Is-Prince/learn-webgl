@@ -50,8 +50,8 @@ const start = () => {
     const diff = currTime - prevTime;
     prevTime = currTime;
     arm1.rotation.angle += 45 * diff * 0.001;
-    renderer.render(camera, scene);
-    requestAnimationFrame(tick);
+    // requestAnimationFrame(tick);
   };
-  tick();
+  renderer.render(camera, scene);
+  // tick();
 };
