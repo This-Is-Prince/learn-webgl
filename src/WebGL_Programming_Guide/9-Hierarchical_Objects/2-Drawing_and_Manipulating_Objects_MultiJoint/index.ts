@@ -19,6 +19,11 @@ const start = () => {
   renderer.setClearColor(0, 0, 0, 1);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(canvas.width, canvas.height);
+  window.addEventListener("resize", () => {
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(canvas.width, canvas.height);
+    camera.aspect = canvas.width / canvas.height;
+  });
 
   const scene = new Scene();
   const geometry = new BoxGeometry(1, 1, 1);
