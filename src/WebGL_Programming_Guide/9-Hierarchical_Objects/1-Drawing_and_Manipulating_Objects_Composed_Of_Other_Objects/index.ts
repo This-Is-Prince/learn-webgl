@@ -127,7 +127,6 @@ const start = () => {
   );
 
   window.addEventListener("keydown", function (ev) {
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     keydown(
       ev,
       gl,
@@ -142,7 +141,6 @@ const start = () => {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   draw(gl, indices.length, viewProjMatrix, u_MvpMatrix, u_NormalMatrix);
 };
 
@@ -158,21 +156,21 @@ const keydown: KeyDown = (
   u_MvpMatrix,
   u_NormalMatrix
 ) => {
-  switch (ev.keyCode) {
-    case 38:
+  switch (ev.key) {
+    case "ArrowUp":
       if (g_joint1Angle < 135) {
         g_joint1Angle += ANGLE_STEP;
       }
       break;
-    case 40:
+    case "ArrowDown":
       if (g_joint1Angle > -135) {
         g_joint1Angle -= ANGLE_STEP;
       }
       break;
-    case 39:
+    case "ArrowRight":
       g_arm1Angle = (g_arm1Angle + ANGLE_STEP) % 360;
       break;
-    case 37:
+    case "ArrowLeft":
       g_arm1Angle = (g_arm1Angle - ANGLE_STEP) % 360;
       break;
     default:
@@ -185,6 +183,7 @@ let g_modelMatrix = new Matrix4(),
   g_mvpMatrix = new Matrix4();
 
 const draw: Draw = (gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix) => {
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   // Arm1
   let arm1Length = 10.0;
   g_modelMatrix.setTranslate(0, -12, 0);
