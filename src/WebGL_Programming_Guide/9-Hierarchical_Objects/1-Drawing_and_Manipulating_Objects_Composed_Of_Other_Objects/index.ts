@@ -109,39 +109,48 @@ const start = () => {
   initBuffer(gl, program, 3, gl.FLOAT, normals, "a_Normal");
 
   /**
-   * Normal Matrix
+   * u_NormalMatrix
    */
   const u_NormalMatrix = gl.getUniformLocation(program, "u_NormalMatrix");
 
   /**
-   * MVP
+   * u_ProjectionMatrix
    */
-  const u_MvpMatrix = gl.getUniformLocation(program, "u_MvpMatrix");
+  const u_ProjectionMatrix = gl.getUniformLocation(
+    program,
+    "u_ProjectionMatrix"
+  );
+  const perspectiveMatrix = new Matrix4();
+  perspectiveMatrix.setPerspective(50, canvas.width / canvas.height, 0.1, 100);
+  gl.uniformMatrix4fv(u_ProjectionMatrix, false, perspectiveMatrix.elements);
 
-  const viewProjMatrix = new Matrix4();
-  viewProjMatrix.setPerspective(50, canvas.width / canvas.height, 0.1, 100);
-  viewProjMatrix.lookAt(
+  /**
+   * u_ViewMatrix
+   */
+  const u_ViewMatrix = gl.getUniformLocation(program, "u_ViewMatrix");
+  const viewMatrix = new Matrix4();
+  viewMatrix.lookAt(
     new Vector3(20, 10, 30),
     new Vector3(0, 0, 0),
     new Vector3(0, 1, 0)
   );
+  gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
+
+  /**
+   * Model Matrix
+   */
+  const u_ModelMatrix = gl.getUniformLocation(program, "u_ModelMatrix");
+  const modelMatrix = new Matrix4();
 
   window.addEventListener("keydown", function (ev) {
-    keydown(
-      ev,
-      gl,
-      indices.length,
-      viewProjMatrix,
-      u_MvpMatrix,
-      u_NormalMatrix
-    );
+    keydown(ev, gl, indices.length, modelMatrix, u_ModelMatrix, u_NormalMatrix);
   });
 
   const indexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-  draw(gl, indices.length, viewProjMatrix, u_MvpMatrix, u_NormalMatrix);
+  draw(gl, indices.length, modelMatrix, u_ModelMatrix, u_NormalMatrix);
 };
 
 let ANGLE_STEP = 3.0;
@@ -152,8 +161,8 @@ const keydown: KeyDown = (
   ev,
   gl,
   n,
-  viewProjMatrix,
-  u_MvpMatrix,
+  modelMatrix,
+  u_ModelMatrix,
   u_NormalMatrix
 ) => {
   switch (ev.key) {
@@ -176,45 +185,54 @@ const keydown: KeyDown = (
     default:
       return;
   }
-  draw(gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix);
+  draw(gl, n, modelMatrix, u_ModelMatrix, u_NormalMatrix);
 };
 
-let g_modelMatrix = new Matrix4(),
-  g_mvpMatrix = new Matrix4();
-
-const draw: Draw = (gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix) => {
+const draw: Draw = (gl, n, modelMatrix, u_ModelMatrix, u_NormalMatrix) => {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   // Arm1
   let arm1Length = 10.0;
-  g_modelMatrix.setTranslate(0, -12, 0);
-  g_modelMatrix.rotate(g_arm1Angle, 0, 1, 0);
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix);
+  modelMatrix.setTranslate(0, -12, 0);
+  modelMatrix.rotate(g_arm1Angle, 0, 1, 0);
+  drawBox(gl, n, modelMatrix, u_ModelMatrix, u_NormalMatrix);
 
   // Arm2
-  g_modelMatrix.translate(0, arm1Length, 0);
-  g_modelMatrix.rotate(g_joint1Angle, 0, 0, 1);
-  g_modelMatrix.scale(1.3, 1, 1.3);
-  drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix);
+  modelMatrix.translate(0, arm1Length, 0);
+  modelMatrix.rotate(g_joint1Angle, 0, 0, 1);
+  modelMatrix.scale(1.3, 1, 1.3);
+  drawBox(gl, n, modelMatrix, u_ModelMatrix, u_NormalMatrix);
 };
 
 const g_normalMatrix = new Matrix4();
 const drawBox: DrawBox = (
   gl,
   n,
-  viewProjMatrix,
-  u_MvpMatrix,
+  modelMatrix,
+  u_ModelMatrix,
   u_NormalMatrix
 ) => {
-  g_mvpMatrix.set(viewProjMatrix);
-  g_mvpMatrix.multiply(g_modelMatrix);
-  gl.uniformMatrix4fv(u_MvpMatrix, false, g_mvpMatrix.elements);
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
-  g_normalMatrix.setInverseOf(g_modelMatrix);
+  g_normalMatrix.setInverseOf(modelMatrix);
   g_normalMatrix.transpose();
   gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 };
 
+const initBuffer: InitBuffer = (gl, program, size, type, data, attribName) => {
+  const buffer = gl.createBuffer();
+  if (!buffer) {
+    throw new Error(`buffer is not created`);
+  }
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+  const attribute = gl.getAttribLocation(program, attribName);
+  if (attribute < 0) {
+    throw new Error(`can't find the attribute - ${attribName}`);
+  }
+  gl.vertexAttribPointer(attribute, size, type, false, 0, 0);
+  gl.enableVertexAttribArray(attribute);
+};
 type DrawBox = (
   gl: WebGLRenderingContext,
   n: number,
@@ -247,17 +265,3 @@ type InitBuffer = (
   data: Float32Array,
   attribName: string
 ) => void;
-const initBuffer: InitBuffer = (gl, program, size, type, data, attribName) => {
-  const buffer = gl.createBuffer();
-  if (!buffer) {
-    throw new Error(`buffer is not created`);
-  }
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-  const attribute = gl.getAttribLocation(program, attribName);
-  if (attribute < 0) {
-    throw new Error(`can't find the attribute - ${attribName}`);
-  }
-  gl.vertexAttribPointer(attribute, size, type, false, 0, 0);
-  gl.enableVertexAttribArray(attribute);
-};
