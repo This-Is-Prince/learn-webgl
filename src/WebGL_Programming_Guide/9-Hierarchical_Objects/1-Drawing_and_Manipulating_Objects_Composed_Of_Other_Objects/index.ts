@@ -5,6 +5,8 @@ import {
   createShader,
 } from "../../9-Hierarchical_Objects/utils";
 import { Matrix4, Vector3 } from "../../9-Hierarchical_Objects/matrix4";
+import { initBuffer } from "./utils/initbuffer";
+import { draw } from "./utils/draw";
 const vertices = new Float32Array([
   // v0-v1-v2-v3 front
   1.5, 10.0, 1.5, -1.5, 10.0, 1.5, -1.5, 0.0, 1.5, 1.5, 0.0, 1.5,
@@ -112,6 +114,7 @@ const start = () => {
    * u_NormalMatrix
    */
   const u_NormalMatrix = gl.getUniformLocation(program, "u_NormalMatrix");
+  const normalMatrix = new Matrix4();
 
   /**
    * u_ProjectionMatrix
@@ -143,14 +146,31 @@ const start = () => {
   const modelMatrix = new Matrix4();
 
   window.addEventListener("keydown", function (ev) {
-    keydown(ev, gl, indices.length, modelMatrix, u_ModelMatrix, u_NormalMatrix);
+    keydown(
+      ev,
+      gl,
+      indices.length,
+      modelMatrix,
+      u_ModelMatrix,
+      normalMatrix,
+      u_NormalMatrix
+    );
   });
 
   const indexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-  draw(gl, indices.length, modelMatrix, u_ModelMatrix, u_NormalMatrix);
+  draw(
+    gl,
+    indices.length,
+    g_arm1Angle,
+    g_joint1Angle,
+    modelMatrix,
+    u_ModelMatrix,
+    normalMatrix,
+    u_NormalMatrix
+  );
 };
 
 let ANGLE_STEP = 3.0;
@@ -163,6 +183,7 @@ const keydown: KeyDown = (
   n,
   modelMatrix,
   u_ModelMatrix,
+  normalMatrix,
   u_NormalMatrix
 ) => {
   switch (ev.key) {
@@ -185,68 +206,17 @@ const keydown: KeyDown = (
     default:
       return;
   }
-  draw(gl, n, modelMatrix, u_ModelMatrix, u_NormalMatrix);
+  draw(
+    gl,
+    n,
+    g_arm1Angle,
+    g_joint1Angle,
+    modelMatrix,
+    u_ModelMatrix,
+    normalMatrix,
+    u_NormalMatrix
+  );
 };
-
-const draw: Draw = (gl, n, modelMatrix, u_ModelMatrix, u_NormalMatrix) => {
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  // Arm1
-  let arm1Length = 10.0;
-  modelMatrix.setTranslate(0, -12, 0);
-  modelMatrix.rotate(g_arm1Angle, 0, 1, 0);
-  drawBox(gl, n, modelMatrix, u_ModelMatrix, u_NormalMatrix);
-
-  // Arm2
-  modelMatrix.translate(0, arm1Length, 0);
-  modelMatrix.rotate(g_joint1Angle, 0, 0, 1);
-  modelMatrix.scale(1.3, 1, 1.3);
-  drawBox(gl, n, modelMatrix, u_ModelMatrix, u_NormalMatrix);
-};
-
-const g_normalMatrix = new Matrix4();
-const drawBox: DrawBox = (
-  gl,
-  n,
-  modelMatrix,
-  u_ModelMatrix,
-  u_NormalMatrix
-) => {
-  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
-
-  g_normalMatrix.setInverseOf(modelMatrix);
-  g_normalMatrix.transpose();
-  gl.uniformMatrix4fv(u_NormalMatrix, false, g_normalMatrix.elements);
-  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
-};
-
-const initBuffer: InitBuffer = (gl, program, size, type, data, attribName) => {
-  const buffer = gl.createBuffer();
-  if (!buffer) {
-    throw new Error(`buffer is not created`);
-  }
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-  const attribute = gl.getAttribLocation(program, attribName);
-  if (attribute < 0) {
-    throw new Error(`can't find the attribute - ${attribName}`);
-  }
-  gl.vertexAttribPointer(attribute, size, type, false, 0, 0);
-  gl.enableVertexAttribArray(attribute);
-};
-type DrawBox = (
-  gl: WebGLRenderingContext,
-  n: number,
-  modelMatrix: Matrix4,
-  u_ModelMatrix: WebGLUniformLocation | null,
-  u_NormalMatrix: WebGLUniformLocation | null
-) => void;
-type Draw = (
-  gl: WebGLRenderingContext,
-  n: number,
-  modelMatrix: Matrix4,
-  u_ModelMatrix: WebGLUniformLocation | null,
-  u_NormalMatrix: WebGLUniformLocation | null
-) => void;
 
 type KeyDown = (
   ev: KeyboardEvent,
@@ -254,14 +224,6 @@ type KeyDown = (
   n: number,
   modelMatrix: Matrix4,
   u_ModelMatrix: WebGLUniformLocation | null,
+  normalMatrix: Matrix4,
   u_NormalMatrix: WebGLUniformLocation | null
-) => void;
-
-type InitBuffer = (
-  gl: WebGLRenderingContext,
-  program: WebGLProgram,
-  size: number,
-  type: number,
-  data: Float32Array,
-  attribName: string
 ) => void;
