@@ -46,7 +46,7 @@ const start = () => {
     prevTime = currTime;
     arm1.rotation.angle += 45 * diff * 0.001;
     renderer.render(camera, scene);
-    // requestAnimationFrame(tick);
+    requestAnimationFrame(tick);
   };
   tick();
 };
