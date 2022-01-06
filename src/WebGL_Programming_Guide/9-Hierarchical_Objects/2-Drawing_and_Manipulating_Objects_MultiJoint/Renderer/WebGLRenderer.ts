@@ -11,7 +11,7 @@ interface RendererParam {
 
 class Renderer {
   private canvas: HTMLCanvasElement;
-  private gl: WebGLRenderingContext;
+  public gl: WebGLRenderingContext;
   private perspectiveMatrixLocation: WebGLUniformLocation;
   private perspectiveMatrix: Matrix4;
   private viewMatrixLocation: WebGLUniformLocation;
@@ -20,7 +20,7 @@ class Renderer {
   private modelMatrix: Matrix4;
   private normalMatrixLocation: WebGLUniformLocation;
   private normalMatrix: Matrix4;
-  private program: WebGLProgram;
+  public program: WebGLProgram;
 
   constructor(param: RendererParam) {
     if (!param.canvas) {
@@ -42,7 +42,7 @@ class Renderer {
     );
     const fragmentShader = createShader(
       this.gl,
-      this.gl.VERTEX_SHADER,
+      this.gl.FRAGMENT_SHADER,
       param.fragmentShaderSource
     );
     this.program = createProgram(this.gl, vertexShader, fragmentShader);
@@ -73,6 +73,7 @@ class Renderer {
       "normalMatrix"
     ) as WebGLUniformLocation;
     this.normalMatrix = new Matrix4();
+    this.gl.useProgram(this.program);
   }
 
   setPixelRatio(ratio: number) {
@@ -92,6 +93,7 @@ class Renderer {
   render(camera: PerspectiveCamera, scene: Scene) {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     const { aspect, far, fov, near, position, target, up } = camera;
+
     this.viewMatrix.setLookAt(position, target, up);
     this.perspectiveMatrix.setPerspective(fov, aspect, near, far);
 

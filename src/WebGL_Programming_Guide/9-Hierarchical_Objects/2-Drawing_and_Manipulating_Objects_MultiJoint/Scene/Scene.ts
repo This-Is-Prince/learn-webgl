@@ -16,6 +16,9 @@ class Scene {
     this.children = [];
     this.modelMatrix = new Matrix4();
   }
+  add(child: Mesh) {
+    this.children.push(child);
+  }
   draw(gl: WebGLRenderingContext, { model, normal }: MatrixInfos) {
     this.children.forEach((mesh, index) => {
       const { scale, position, rotation } = mesh;
@@ -42,7 +45,7 @@ class Scene {
       normal.matrix.transpose();
       gl.uniformMatrix4fv(normal.matrixLocation, false, normal.matrix.elements);
       gl.uniformMatrix4fv(model.matrixLocation, false, model.matrix.elements);
-      gl.drawElements(gl.TRIANGLES, mesh.count, gl.FLOAT, 0);
+      gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_BYTE, 0);
     });
   }
 }

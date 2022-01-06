@@ -8,9 +8,9 @@ class BoxGeometry {
   public attributes: Attributes;
   constructor(public width = 1, public height = 1, public depth = 1) {
     const position = new Float32Array([
-      // v0, v1, v2, v3 front
+      // v0-v1-v2-v3 front
       1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,
-      // v0, v3, v4, v5 right
+      // v0-v3-v4-v5 right
       1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,
       // v0-v5-v6-v1 up
       1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
@@ -53,8 +53,9 @@ class BoxGeometry {
   }
   setAttributes(gl: WebGLRenderingContext, program: WebGLProgram) {
     const { index, normal, position } = this.attributes;
-    this.initBuffer(gl, normal, program, "normal");
     this.initBuffer(gl, position, program, "position");
+    this.initBuffer(gl, normal, program, "normal");
+
     const indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, index, gl.STATIC_DRAW);
@@ -69,6 +70,7 @@ class BoxGeometry {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
     const index = gl.getAttribLocation(program, attribName);
+
     if (index < 0) {
       throw new Error(`can't find attribute = ${attribName}`);
     }

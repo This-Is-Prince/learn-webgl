@@ -22,6 +22,11 @@ class Vector3 {
     this.y *= mag;
     this.z *= mag;
   }
+  set(x: number, y: number, z: number) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
   cross(vec: Vector3): Vector3 {
     const { x, y, z } = this;
     const newVec = new Vector3();
