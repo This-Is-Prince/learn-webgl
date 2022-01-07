@@ -4,7 +4,7 @@ import {
   getCanvasElement,
   getWebGLContext,
   initShaders,
-  updateCanvasResolution,
+  resizeDrawingBuffer,
 } from "../utils";
 
 window.addEventListener("load", () => {
@@ -15,12 +15,16 @@ const HelloPoint1 = () => {
    * Canvas
    */
   const canvas = getCanvasElement("canvas");
-  updateCanvasResolution(canvas, Math.min(window.devicePixelRatio, 2));
 
   /**
    * WebGLRenderingContext
    */
   const gl = getWebGLContext(canvas);
+  resizeDrawingBuffer(gl, Math.min(window.devicePixelRatio, 2));
+  window.addEventListener("resize", () => {
+    resizeDrawingBuffer(gl, Math.min(window.devicePixelRatio, 2));
+    draw(gl);
+  });
 
   /**
    * Initialize Shaders
@@ -28,6 +32,9 @@ const HelloPoint1 = () => {
   const program = initShaders(gl, vertexShaderSource, fragmentShaderSource);
   gl.useProgram(program);
   gl.clearColor(0, 0, 0, 1);
+  draw(gl);
+};
+const draw = (gl: WebGLRenderingContext) => {
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.POINTS, 0, 1);
 };

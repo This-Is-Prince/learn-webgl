@@ -116,24 +116,15 @@ const getCanvasElement: GetCanvasElement = (id) => {
   return canvas;
 };
 
-type UpdateCanvasResolution = (
-  canvas: HTMLCanvasElement,
+type ResizeDrawingBuffer = (
+  gl: WebGLRenderingContext,
   pixelRatio: number
 ) => void;
-/**
- *
- * @param canvas HTMLCanvasELement (canvas element)
- * @param pixelRatio (pixel ratio for resolution)
- */
-const updateCanvasResolution: UpdateCanvasResolution = (canvas, pixelRatio) => {
-  const { clientWidth, clientHeight } = canvas;
-  canvas.width = (clientWidth * pixelRatio) | 0;
-  canvas.height = (clientHeight * pixelRatio) | 0;
+const resizeDrawingBuffer: ResizeDrawingBuffer = (gl, pixelRatio) => {
+  const { clientWidth, clientHeight } = gl.canvas;
+  gl.canvas.width = (clientWidth * pixelRatio) | 0;
+  gl.canvas.height = (clientHeight * pixelRatio) | 0;
+  gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 };
 
-export {
-  initShaders,
-  getWebGLContext,
-  getCanvasElement,
-  updateCanvasResolution,
-};
+export { initShaders, getWebGLContext, getCanvasElement, resizeDrawingBuffer };
