@@ -83,9 +83,57 @@ const initShaders: InitShaders = (
     fragmentShaderSource
   );
   const program = createProgram(gl, vertexShader, fragmentShader);
-  gl.useProgram(program);
-  gl.clearColor(0, 0, 0, 1);
   return program;
 };
 
-export { initShaders };
+type GetWebGLContext = (canvas: HTMLCanvasElement) => WebGLRenderingContext;
+/**
+ *
+ * @param canvas HTMLCanvasElement (html canvas element)
+ * @returns WebGLRenderingContext (webgl context)
+ */
+const getWebGLContext: GetWebGLContext = (canvas) => {
+  const gl = canvas.getContext("webgl") as WebGLRenderingContext;
+  if (!gl) {
+    throw new Error("webgl is not supported");
+  }
+  return gl;
+};
+
+type GetCanvasElement = (id: string) => HTMLCanvasElement;
+/**
+ *
+ * @param id canvas element id
+ * @returns HTMLCanvasElement (canvas element)
+ */
+const getCanvasElement: GetCanvasElement = (id) => {
+  let canvas = document.getElementById(id) as HTMLCanvasElement;
+  if (!canvas) {
+    canvas = document.createElement("canvas");
+    canvas.id = id;
+    document.body.appendChild(canvas);
+  }
+  return canvas;
+};
+
+type UpdateCanvasResolution = (
+  canvas: HTMLCanvasElement,
+  pixelRatio: number
+) => void;
+/**
+ *
+ * @param canvas HTMLCanvasELement (canvas element)
+ * @param pixelRatio (pixel ratio for resolution)
+ */
+const updateCanvasResolution: UpdateCanvasResolution = (canvas, pixelRatio) => {
+  const { clientWidth, clientHeight } = canvas;
+  canvas.width = (clientWidth * pixelRatio) | 0;
+  canvas.height = (clientHeight * pixelRatio) | 0;
+};
+
+export {
+  initShaders,
+  getWebGLContext,
+  getCanvasElement,
+  updateCanvasResolution,
+};
