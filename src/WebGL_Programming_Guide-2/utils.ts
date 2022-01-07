@@ -168,6 +168,41 @@ const getUniformLocation: GetUniformLocation = (gl, program, name) => {
   return uniform;
 };
 
+interface BufferParam {
+  gl: WebGLRenderingContext;
+  attribute: number;
+  data: Float32Array;
+  size?: number;
+  type?: number;
+  stride?: number;
+  offset?: number;
+}
+
+type InitArrayBuffer = (param: BufferParam) => void;
+const initArrayBuffer: InitArrayBuffer = ({
+  gl,
+  data,
+  attribute,
+  size = 3,
+  type = gl.FLOAT,
+  stride = 0,
+  offset = 0,
+}) => {
+  // create a buffer object
+  const buffer = gl.createBuffer();
+  if (!buffer) {
+    throw new Error(`unable to create buffer`);
+  }
+  // bind the buffer object to a buffer
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  // write data into the buffer object
+  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+  // assign the buffer object to a attribute variable
+  gl.vertexAttribPointer(attribute, size, type, false, stride, offset);
+  // enable the assignment to attribute variable
+  gl.enableVertexAttribArray(attribute);
+};
+
 export {
   initShaders,
   getWebGLContext,
@@ -175,4 +210,5 @@ export {
   resizeDrawingBuffer,
   getAttribLocation,
   getUniformLocation,
+  initArrayBuffer,
 };
