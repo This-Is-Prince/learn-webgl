@@ -147,10 +147,32 @@ const getAttribLocation: GetAttribLocation = (gl, program, name) => {
   return attribute;
 };
 
+type GetUniformLocation = (
+  gl: WebGLRenderingContext,
+  program: WebGLProgram,
+  name: string
+) => WebGLUniformLocation;
+
+/**
+ *
+ * @param gl WebGLRenderingContext (webgl context)
+ * @param program WebGLProgram (program that holds vertex,fragment shader, where uniform variable define)
+ * @param name string (uniform variable name)
+ * @returns
+ */
+const getUniformLocation: GetUniformLocation = (gl, program, name) => {
+  const uniform = gl.getUniformLocation(program, name) as WebGLUniformLocation;
+  if (!uniform) {
+    throw new Error(`unable to find the uniform with name -> ${name}`);
+  }
+  return uniform;
+};
+
 export {
   initShaders,
   getWebGLContext,
   getCanvasElement,
   resizeDrawingBuffer,
   getAttribLocation,
+  getUniformLocation,
 };
