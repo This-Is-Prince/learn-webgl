@@ -127,4 +127,30 @@ const resizeDrawingBuffer: ResizeDrawingBuffer = (gl, pixelRatio) => {
   gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 };
 
-export { initShaders, getWebGLContext, getCanvasElement, resizeDrawingBuffer };
+type GetAttribLocation = (
+  gl: WebGLRenderingContext,
+  program: WebGLProgram,
+  name: string
+) => number;
+/**
+ *
+ * @param gl WebGLRenderingContext (webgl context)
+ * @param program WebGLProgram (program that holds vertex shader, where attribute variable define)
+ * @param name string (attribute variable name)
+ * @returns
+ */
+const getAttribLocation: GetAttribLocation = (gl, program, name) => {
+  const attribute = gl.getAttribLocation(program, name);
+  if (attribute < 0) {
+    throw new Error(`unable to find the attribute with name -> ${name}`);
+  }
+  return attribute;
+};
+
+export {
+  initShaders,
+  getWebGLContext,
+  getCanvasElement,
+  resizeDrawingBuffer,
+  getAttribLocation,
+};
