@@ -45,9 +45,34 @@ const RotatedTriangle_Matrix = () => {
 
   // u_ModelMatrix
   const u_ModelMatrix = getUniformLocation(gl, program, "u_ModelMatrix");
-  const modelMatrix = new Matrix4();
-  modelMatrix.setRotate(45, 0, 0, 1);
-  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+  const ANGLE = 45;
+  const radian = (Math.PI * ANGLE) / 180;
+  const cosB = Math.cos(radian);
+  const sinB = Math.sin(radian);
+
+  const modelMatrix = new Float32Array([
+    // First column
+    cosB,
+    sinB,
+    0.0,
+    0.0,
+    // second column
+    -sinB,
+    cosB,
+    0.0,
+    0.0,
+    // third column
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    // fourth column
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+  ]);
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix);
 
   draw(gl, n);
 };
