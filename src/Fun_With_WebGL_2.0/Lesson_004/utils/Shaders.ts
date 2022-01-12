@@ -1,4 +1,5 @@
-import { WebGL2Context } from "../lib";
+import { StandardAttributesLocation, WebGL2Context } from "../lib";
+import { AttributesLocation, AttributesName } from "./Constants";
 
 /**
  * ShaderUtil (shader utility functions described in this class as a static)
@@ -84,6 +85,19 @@ class ShaderUtil {
     }
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
+
+    gl.bindAttribLocation(
+      program,
+      AttributesLocation.Position,
+      AttributesName.Position
+    );
+    gl.bindAttribLocation(
+      program,
+      AttributesLocation.Normal,
+      AttributesName.Normal
+    );
+    gl.bindAttribLocation(program, AttributesLocation.Uv, AttributesName.Uv);
+
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
       console.error(`unable to link program, ${gl.getProgramInfoLog(program)}`);
@@ -103,6 +117,92 @@ class ShaderUtil {
     gl.detachShader(program, fragmentShader);
     ShaderUtil.deleteShaders(gl, vertexShader, fragmentShader);
     return program;
+  }
+
+  /**
+   * Create Program From Text
+   * @param gl WebGL2Context (webgl2 context)
+   * @param vertexShaderText string (vertex shader source code)
+   * @param fragmentShaderText string (fragment shader source code)
+   * @param doValidate boolean
+   * @returns WebGLProgram | null
+   */
+  static createProgramFromText(
+    gl: WebGL2Context,
+    vertexShaderText: string,
+    fragmentShaderText: string,
+    doValidate: boolean
+  ) {
+    const vertexShader = ShaderUtil.createShader(
+      gl,
+      vertexShaderText,
+      gl.VERTEX_SHADER
+    );
+    if (!vertexShader) {
+      return null;
+    }
+    const fragmentShader = ShaderUtil.createShader(
+      gl,
+      fragmentShaderText,
+      gl.FRAGMENT_SHADER
+    );
+    if (!fragmentShader) {
+      gl.deleteShader(vertexShader);
+      return null;
+    }
+    return ShaderUtil.createProgram(
+      gl,
+      vertexShader,
+      fragmentShader,
+      doValidate
+    );
+  }
+
+  /**
+   * Create Program From DOM Element (get text from dom element)
+   * @param gl WebGL2Context (webgl2 context)
+   * @param vertexID string (element id, that have vertex shader source code)
+   * @param fragmentID string (element id, that have fragment shader source code)
+   * @param doValidate boolean
+   * @returns WebGLProgram | null
+   */
+  static createProgramFromDOM(
+    gl: WebGL2Context,
+    vertexID: string,
+    fragmentID: string,
+    doValidate: boolean
+  ) {
+    const vertexShaderText = ShaderUtil.getShaderSourceFromDOM(vertexID);
+    if (!vertexShaderText) {
+      return null;
+    }
+    const fragmentShaderText = ShaderUtil.getShaderSourceFromDOM(fragmentID);
+    if (!fragmentShaderText) {
+      return null;
+    }
+    return ShaderUtil.createProgramFromText(
+      gl,
+      vertexShaderText,
+      fragmentShaderText,
+      doValidate
+    );
+  }
+
+  /**
+   * Get Locations of attributes through native functions
+   * @param gl WebGL2Context (webgl2 context)
+   * @param program WebGLProgram
+   * @returns StandardAttributesLocation
+   */
+  static getStandardAttribLocation(
+    gl: WebGL2Context,
+    program: WebGLProgram
+  ): StandardAttributesLocation {
+    return {
+      position: gl.getAttribLocation(program, AttributesName.Position),
+      normal: gl.getAttribLocation(program, AttributesName.Normal),
+      uv: gl.getAttribLocation(program, AttributesName.Uv),
+    };
   }
 }
 export { ShaderUtil };

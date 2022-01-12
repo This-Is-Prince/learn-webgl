@@ -17,6 +17,14 @@ interface MeshesData {
   [key: string]: MeshData;
 }
 
+interface StandardAttributesLocation {
+  [key: string]: number;
+}
+
+interface StandardUniformsLocation {
+  [key: string]: WebGLUniformLocation | null;
+}
+
 interface WebGL2Context extends WebGL2RenderingContext {
   meshesData: MeshesData;
   _ClearScreen: () => WebGL2Context;
@@ -30,4 +38,10 @@ interface WebGL2Context extends WebGL2RenderingContext {
     uvArray?: number[]
   ) => MeshData;
 }
-export { WebGL2Context, MeshesData, MeshData };
+export {
+  WebGL2Context,
+  MeshesData,
+  MeshData,
+  StandardAttributesLocation,
+  StandardUniformsLocation,
+};
