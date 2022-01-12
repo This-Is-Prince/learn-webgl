@@ -1,5 +1,83 @@
-import { StandardAttributesLocation, WebGL2Context } from "../lib";
+import {
+  StandardAttributesLocation,
+  StandardUniformsLocation,
+  WebGL2Context,
+} from "../lib";
+import { Modal } from "../Modal/Modal";
 import { AttributesLocation, AttributesName } from "./Constants";
+
+class Shader {
+  public gl!: WebGL2Context;
+  public program!: WebGLProgram;
+  public attributeLocation!: StandardAttributesLocation;
+  public uniformLocation!: StandardUniformsLocation;
+  constructor(
+    gl: WebGL2Context,
+    vertexShaderSource: string,
+    fragmentShaderSource: string
+  ) {
+    this.program = ShaderUtil.createProgramFromText(
+      gl,
+      vertexShaderSource,
+      fragmentShaderSource,
+      true
+    ) as WebGLProgram;
+    if (!this.program) {
+      this.gl = gl;
+      gl.useProgram(this.program);
+      this.attributeLocation = ShaderUtil.getStandardAttribLocations(
+        gl,
+        this.program
+      );
+      this.uniformLocation = {};
+    }
+  }
+  /**
+   * activate this shader program
+   * @returns Shader
+   */
+  activate() {
+    this.gl.useProgram(this.program);
+    return this;
+  }
+  /**
+   * deactivate this shader program
+   */
+  deactivate() {
+    this.gl.useProgram(null);
+  }
+  /**
+   * delete this shader program
+   */
+  dispose() {
+    if (this.gl.getParameter(this.gl.CURRENT_PROGRAM) === this.program) {
+      this.gl.useProgram(null);
+    }
+    this.gl.deleteProgram(this.program);
+  }
+
+  preRender() {}
+
+  renderModal(modal: Modal) {
+    const {
+      mesh: { drawMode, vao, indexCount, vertexCount },
+    } = modal;
+
+    this.gl.bindVertexArray(vao);
+
+    if (indexCount) {
+      this.gl.drawElements(drawMode, indexCount, this.gl.UNSIGNED_SHORT, 0);
+    } else if (vertexCount) {
+      this.gl.drawElements(drawMode, vertexCount, this.gl.UNSIGNED_SHORT, 0);
+    } else {
+      console.error(
+        `there is no "indexCount" and "vertexCount" in modal mesh!!!!`
+      );
+    }
+    this.gl.bindVertexArray(null);
+    return this;
+  }
+}
 
 /**
  * ShaderUtil (shader utility functions described in this class as a static)
@@ -194,7 +272,7 @@ class ShaderUtil {
    * @param program WebGLProgram
    * @returns StandardAttributesLocation
    */
-  static getStandardAttribLocation(
+  static getStandardAttribLocations(
     gl: WebGL2Context,
     program: WebGLProgram
   ): StandardAttributesLocation {
@@ -205,4 +283,4 @@ class ShaderUtil {
     };
   }
 }
-export { ShaderUtil };
+export { ShaderUtil, Shader };
