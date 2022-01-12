@@ -22,7 +22,7 @@ class Shader {
       fragmentShaderSource,
       true
     ) as WebGLProgram;
-    if (!this.program) {
+    if (this.program) {
       this.gl = gl;
       gl.useProgram(this.program);
       this.attributeLocation = ShaderUtil.getStandardAttribLocations(
@@ -73,7 +73,7 @@ class Shader {
     if (indexCount) {
       this.gl.drawElements(drawMode, indexCount, this.gl.UNSIGNED_SHORT, 0);
     } else if (vertexCount) {
-      this.gl.drawElements(drawMode, vertexCount, this.gl.UNSIGNED_SHORT, 0);
+      this.gl.drawArrays(drawMode, 0, vertexCount);
     } else {
       console.error(
         `there is no "indexCount" and "vertexCount" in modal mesh!!!!`

@@ -16,7 +16,7 @@ class GridAxis {
       vertices.push(pos);
       vertices.push(half);
       vertices.push(0);
-      vertices.push(0);
+      vertices.push(1);
 
       vertices.push(pos);
       vertices.push(-half);
@@ -28,12 +28,12 @@ class GridAxis {
       vertices.push(-half);
       vertices.push(pos);
       vertices.push(0);
-      vertices.push(0);
+      vertices.push(2);
 
       vertices.push(half);
       vertices.push(pos);
       vertices.push(0);
-      vertices.push(1);
+      vertices.push(2);
     }
 
     const attrColorLoc = 4;
