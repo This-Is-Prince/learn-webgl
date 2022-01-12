@@ -58,6 +58,11 @@ class Shader {
 
   preRender() {}
 
+  /**
+   * Render specified modal
+   * @param modal Modal
+   * @returns Shader
+   */
   renderModal(modal: Modal) {
     const {
       mesh: { drawMode, vao, indexCount, vertexCount },

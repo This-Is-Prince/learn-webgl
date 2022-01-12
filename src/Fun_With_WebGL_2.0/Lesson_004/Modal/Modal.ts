@@ -2,8 +2,9 @@ import { MeshData } from "../lib";
 
 class Modal {
   public mesh!: MeshData;
-  constructor(mesh: MeshData) {
-    this.mesh = mesh;
+  constructor(meshData: MeshData) {
+    this.mesh = meshData;
   }
+  preRender() {}
 }
 export { Modal };
