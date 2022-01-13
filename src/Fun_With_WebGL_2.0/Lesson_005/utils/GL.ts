@@ -32,6 +32,21 @@ class GL {
       return this;
     };
 
+    gl.fCreateArrayBuffer = function (srcData, isStatic = true) {
+      const buffer = this.createBuffer() as WebGLBuffer;
+      if (!buffer) {
+        console.error(`Error unable to create buffer `);
+      }
+      this.bindBuffer(this.ARRAY_BUFFER, buffer);
+      this.bufferData(
+        this.ARRAY_BUFFER,
+        srcData,
+        isStatic ? this.STATIC_DRAW : this.DYNAMIC_DRAW
+      );
+      this.bindBuffer(this.ARRAY_BUFFER, null);
+      return buffer;
+    };
+
     /**
      * Setters / Getters
      */
