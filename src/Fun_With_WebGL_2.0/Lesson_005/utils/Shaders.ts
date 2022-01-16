@@ -1,4 +1,71 @@
-import { WebGL2Context } from "../lib";
+import { StandardAttribLoc, StandardUniformLoc, WebGL2Context } from "../lib";
+import { Modal } from "../Modal/Modal";
+import { attributes } from "./Constants";
+
+class Shader {
+  public program!: WebGLProgram;
+  public gl!: WebGL2Context;
+  public attribLoc!: StandardAttribLoc;
+  public uniformLoc!: StandardUniformLoc;
+
+  constructor(
+    gl: WebGL2Context,
+    vertexShaderSource: string,
+    fragmentShaderSource: string
+  ) {
+    this.program = ShaderUtil.createProgramFromText(
+      gl,
+      vertexShaderSource,
+      fragmentShaderSource,
+      true
+    ) as WebGLProgram;
+    if (!this.program) {
+      console.error(`unable to create shader program from text`);
+    }
+    if (this.program) {
+      this.gl = gl;
+      this.gl.useProgram(this.program);
+      this.attribLoc = ShaderUtil.getStandardAttribLocation(
+        this.gl,
+        this.program
+      );
+      this.uniformLoc = {};
+    }
+  }
+
+  // Methods
+  activate() {
+    this.gl.useProgram(this.program);
+    return this;
+  }
+  deactivate() {
+    this.gl.useProgram(null);
+    return this;
+  }
+
+  dispose() {
+    if (this.gl.getParameter(this.gl.CURRENT_PROGRAM) === this.program) {
+      this.gl.useProgram(null);
+    }
+    this.gl.deleteProgram(this.program);
+  }
+
+  preRender() {}
+  renderModal(modal: Modal) {
+    const { vertexCount, indexCount, drawMode, vao } = modal.mesh;
+    this.gl.bindVertexArray(vao);
+
+    if (indexCount) {
+      this.gl.drawElements(drawMode, indexCount, this.gl.UNSIGNED_SHORT, 0);
+    } else if (vertexCount) {
+      this.gl.drawArrays(drawMode, 0, vertexCount);
+    } else {
+      console.error(`vertexCount and indexCount both are null | undefined`);
+    }
+    this.gl.bindVertexArray(null);
+    return this;
+  }
+}
 
 class ShaderUtil {
   static createShader(gl: WebGL2Context, source: string, type: number) {
@@ -18,6 +85,7 @@ class ShaderUtil {
     }
     return shader;
   }
+
   static createProgram(
     gl: WebGL2Context,
     vertexShader: WebGLShader,
@@ -31,6 +99,16 @@ class ShaderUtil {
     }
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
+
+    const {
+      normal: { location: norLoc, name: norName },
+      position: { location: posLoc, name: posName },
+      uv: { location: uvLoc, name: uvName },
+    } = attributes;
+    gl.bindAttribLocation(program, posLoc, posName);
+    gl.bindAttribLocation(program, norLoc, norName);
+    gl.bindAttribLocation(program, uvLoc, uvName);
+
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
       console.error(
@@ -79,6 +157,7 @@ class ShaderUtil {
     ) as WebGLShader;
     if (!fragmentShader) {
       console.error(`unable to create fragment shader`);
+      gl.deleteShader(vertexShader);
       return null;
     }
     return ShaderUtil.createProgram(
@@ -88,6 +167,24 @@ class ShaderUtil {
       doValidate
     );
   }
+
+  static getStandardAttribLocation(gl: WebGL2Context, program: WebGLProgram) {
+    const {
+      normal: { name: norName },
+      position: { name: posName },
+      uv: { name: uvName },
+    } = attributes;
+    return {
+      position: gl.getAttribLocation(program, posName),
+      norm: gl.getAttribLocation(program, norName),
+      uv: gl.getAttribLocation(program, uvName),
+    };
+  }
+
+  static getStandardUniformLocation(
+    _gl: WebGL2Context,
+    _program: WebGLProgram
+  ) {}
 }
 
-export { ShaderUtil };
+export { ShaderUtil, Shader };

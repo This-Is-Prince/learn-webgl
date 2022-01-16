@@ -1,3 +1,21 @@
+interface MeshData {
+  drawMode: number;
+  vao: WebGLVertexArrayObject;
+  verticesBuffer?: WebGLBuffer;
+  vertexComponentLen?: number;
+  vertexCount?: number;
+
+  normalsBuffer?: WebGLBuffer;
+
+  uvBuffer?: WebGLBuffer;
+
+  indicesBuffer?: WebGLBuffer;
+  indexCount?: number;
+}
+interface MeshesData {
+  [key: string]: MeshData;
+}
+
 interface WebGL2Context extends WebGL2RenderingContext {
   fClearScreen: () => WebGL2Context;
   fSetSize: (w: number, h: number) => WebGL2Context;
@@ -5,5 +23,41 @@ interface WebGL2Context extends WebGL2RenderingContext {
     srcData: BufferSource,
     isStatic?: boolean
   ) => WebGLBuffer;
+  fCreateMeshVAO: (
+    name: string,
+    indices?: number[] | null,
+    vertices?: number[] | null,
+    normals?: number[] | null,
+    uv?: number[] | null
+  ) => MeshData;
+  meshesData: MeshesData;
 }
-export { WebGL2Context };
+
+interface Attribute {
+  name: string;
+  location: number;
+}
+interface Attributes {
+  position: Attribute;
+  normal: Attribute;
+  uv: Attribute;
+}
+
+interface StandardAttribLoc {
+  position: number;
+  norm: number;
+  uv: number;
+  [key: string]: number;
+}
+interface StandardUniformLoc {
+  [key: string]: WebGLUniformLocation;
+}
+
+export {
+  WebGL2Context,
+  Attributes,
+  MeshData,
+  MeshesData,
+  StandardAttribLoc,
+  StandardUniformLoc,
+};
