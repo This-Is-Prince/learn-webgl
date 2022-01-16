@@ -5,6 +5,7 @@ import { Shader } from "./utils/Shaders";
 import { RenderLoop } from "./utils/RenderLoop";
 import { WebGL2Context } from "./lib";
 import { Modal } from "./Modal/Modal";
+import { Primitives } from "./primitives/Primitives";
 
 window.addEventListener("load", () => {
   /**
@@ -12,36 +13,31 @@ window.addEventListener("load", () => {
    */
   const gl = GL.getGLInstance("canvas").fSetSize(500, 500).fClearScreen();
 
-  const gShader = new TestShader(gl);
-
-  const mesh = gl.fCreateMeshVAO(
-    "dots",
-    null,
-    [0, 0, 0, 0.1, 0.1, 0, 0.1, -0.1, 0, -0.1, -0.1, 0, -0.1, 0.1, 0]
+  const gShader = new TestShader(
+    gl,
+    [
+      // Gray
+      0.8, 0.8, 0.8,
+      // Red
+      1, 0, 0,
+      // Green
+      0, 1, 0,
+      // Blue
+      0, 0, 1,
+    ]
   );
-  mesh.drawMode = gl.POINTS;
 
-  const gModal = new Modal(mesh);
+  const gModal = new Modal(Primitives.GridAxis.createMesh(gl));
 
-  const PointSizeStep = 3,
-    AngleStep = Math.PI * 0.5;
-  let pointSize = 0,
-    angle = 0;
-  function onRender(dt: number) {
+  function onRender(_dt: number) {
     gl.fClearScreen();
-    gShader
-      .activate()
-      .set(
-        Math.sin((pointSize += PointSizeStep * dt)) * 10.0 + 30.0,
-        (angle += AngleStep * dt)
-      )
-      .renderModal(gModal);
+    gShader.activate().renderModal(gModal);
   }
   new RenderLoop(onRender).start();
 });
 
 class TestShader extends Shader {
-  constructor(gl: WebGL2Context) {
+  constructor(gl: WebGL2Context, colors: number[]) {
     super(gl, vertexShaderSource, fragmentShaderSource);
     this.uniformLoc.uPointSize = gl.getUniformLocation(
       this.program,
@@ -51,6 +47,9 @@ class TestShader extends Shader {
       this.program,
       "uAngle"
     ) as WebGLUniformLocation;
+
+    const uColor = gl.getUniformLocation(this.program, "uColor");
+    gl.uniform3fv(uColor, colors);
 
     gl.useProgram(null);
   }
