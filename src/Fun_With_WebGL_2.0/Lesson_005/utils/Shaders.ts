@@ -29,11 +29,15 @@ class Shader {
         this.gl,
         this.program
       );
-      this.uniformLoc = {};
+      this.uniformLoc = ShaderUtil.getStandardUniformLocation(
+        this.gl,
+        this.program
+      );
     }
   }
 
-  // Methods
+  //...................................................
+  //Methods
   activate() {
     this.gl.useProgram(this.program);
     return this;
@@ -43,26 +47,47 @@ class Shader {
     return this;
   }
 
+  setPerspective(matData: Float32Array) {
+    this.gl.uniformMatrix4fv(this.uniformLoc.perspective, false, matData);
+    return this;
+  }
+  setModalMatrix(matData: Float32Array) {
+    this.gl.uniformMatrix4fv(this.uniformLoc.modalMatrix, false, matData);
+    return this;
+  }
+  setCameraMatrix(matData: Float32Array) {
+    this.gl.uniformMatrix4fv(this.uniformLoc.cameraMatrix, false, matData);
+    return this;
+  }
+
+  //function helps clean up resources when shader is no longer needed.
   dispose() {
-    if (this.gl.getParameter(this.gl.CURRENT_PROGRAM) === this.program) {
+    //unbind the program if its currently active
+    if (this.gl.getParameter(this.gl.CURRENT_PROGRAM) === this.program)
       this.gl.useProgram(null);
-    }
     this.gl.deleteProgram(this.program);
   }
 
-  preRender() {}
-  renderModal(modal: Modal) {
-    const { vertexCount, indexCount, drawMode, vao } = modal.mesh;
-    this.gl.bindVertexArray(vao);
+  //...................................................
+  //RENDER RELATED METHODS
 
-    if (indexCount) {
+  //Setup custom properties
+  preRender() {} //abstract method, extended object may need need to do some things before rendering.
+
+  //Handle rendering a modal
+  renderModal(modal: Modal) {
+    this.setModalMatrix(modal.transform.getViewMatrix()); //Set the transform, so the shader knows where the modal exists in 3d space
+    this.gl.bindVertexArray(modal.mesh.vao); //Enable VAO, this will set all the predefined attributes for the shader
+
+    const { indexCount, vertexCount, drawMode } = modal.mesh;
+    if (indexCount)
       this.gl.drawElements(drawMode, indexCount, this.gl.UNSIGNED_SHORT, 0);
-    } else if (vertexCount) {
+    else if (vertexCount) {
       this.gl.drawArrays(drawMode, 0, vertexCount);
-    } else {
-      console.error(`vertexCount and indexCount both are null | undefined`);
     }
+
     this.gl.bindVertexArray(null);
+
     return this;
   }
 }
@@ -182,9 +207,16 @@ class ShaderUtil {
   }
 
   static getStandardUniformLocation(
-    _gl: WebGL2Context,
-    _program: WebGLProgram
-  ) {}
+    gl: WebGL2Context,
+    program: WebGLProgram
+  ): StandardUniformLoc {
+    return {
+      perspective: gl.getUniformLocation(program, "uPMatrix")!,
+      modalMatrix: gl.getUniformLocation(program, "uMVMatrix")!,
+      cameraMatrix: gl.getUniformLocation(program, "uCameraMatrix")!,
+      mainTexture: gl.getUniformLocation(program, "uMainTex")!,
+    };
+  }
 }
 
 export { ShaderUtil, Shader };
