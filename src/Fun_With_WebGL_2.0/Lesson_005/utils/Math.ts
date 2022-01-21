@@ -132,6 +132,7 @@ class Matrix4 {
     for (let i = 0; i < 16; i++) {
       this.mat[i] = i % 5 == 0 ? 1 : 0;
     }
+    return this;
   }
   /**
    * Get Identity Matrix in the form of single Float32Array
@@ -327,7 +328,7 @@ class Matrix4 {
     ];
   }
 
-  static transformVec4(out: number[], v: number[], m: Float32Array) {
+  static transformVec4(out: Float32Array, v: number[], m: Float32Array) {
     out[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
     out[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
     out[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];

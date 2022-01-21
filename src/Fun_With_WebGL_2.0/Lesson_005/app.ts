@@ -6,7 +6,6 @@ import { RenderLoop } from "./utils/RenderLoop";
 import { WebGL2Context } from "./lib";
 import { Modal } from "./Modal/Modal";
 import { Primitives } from "./primitives/Primitives";
-import { Matrix4 } from "./utils/Math";
 
 window.addEventListener("load", () => {
   /**
