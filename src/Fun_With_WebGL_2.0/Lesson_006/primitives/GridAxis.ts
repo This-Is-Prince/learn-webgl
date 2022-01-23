@@ -1,11 +1,15 @@
 import { MeshData, WebGL2Context } from "../lib";
+import { Modal } from "../Modal/Modal";
 import { attributes } from "../utils/Constants";
 
 class GridAxis {
-  static createMesh(gl: WebGL2Context) {
+  static createModal(gl: WebGL2Context, incAxis: boolean) {
+    return new Modal(GridAxis.createMesh(gl, incAxis));
+  }
+  static createMesh(gl: WebGL2Context, incAxis: boolean) {
     const vertices: number[] = [];
 
-    const size = 1.8;
+    const size = 2;
     const div = 10.0;
     const step = size / div;
     const half = size / 2;
@@ -37,25 +41,40 @@ class GridAxis {
       vertices.push(1);
     }
 
-    vertices.push(-half);
-    vertices.push(-half);
-    vertices.push(0);
-    vertices.push(2);
+    if (incAxis) {
+      //x axis
+      vertices.push(-1.1); //x1
+      vertices.push(0); //y1
+      vertices.push(0); //z1
+      vertices.push(1); //c2
 
-    vertices.push(half);
-    vertices.push(half);
-    vertices.push(0);
-    vertices.push(2);
+      vertices.push(1.1); //x2
+      vertices.push(0); //y2
+      vertices.push(0); //z2
+      vertices.push(1); //c2
 
-    vertices.push(-half);
-    vertices.push(half);
-    vertices.push(0);
-    vertices.push(3);
+      //y axis
+      vertices.push(0); //x1
+      vertices.push(-1.1); //y1
+      vertices.push(0); //z1
+      vertices.push(2); //c2
 
-    vertices.push(half);
-    vertices.push(-half);
-    vertices.push(0);
-    vertices.push(3);
+      vertices.push(0); //x2
+      vertices.push(1.1); //y2
+      vertices.push(0); //z2
+      vertices.push(2); //c2
+
+      //z axis
+      vertices.push(0); //x1
+      vertices.push(0); //y1
+      vertices.push(-1.1); //z1
+      vertices.push(3); //c2
+
+      vertices.push(0); //x2
+      vertices.push(0); //y2
+      vertices.push(1.1); //z2
+      vertices.push(3); //c2
+    }
 
     const attrColorLoc = 4;
     const mesh: MeshData = {

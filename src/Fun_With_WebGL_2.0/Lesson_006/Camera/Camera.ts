@@ -95,8 +95,8 @@ class CameraController {
   public initY!: number;
   public prevX!: number;
   public prevY!: number;
-  public onUpHandler!: EventListener;
-  public onMoveHandler!: EventListener;
+  public onUpHandler!: (this: HTMLCanvasElement, ev: MouseEvent) => any;
+  public onMoveHandler!: (this: HTMLCanvasElement, ev: MouseEvent) => any;
 
   constructor(gl: WebGL2Context, camera: Camera) {
     const oThis = this;
@@ -116,17 +116,17 @@ class CameraController {
     this.prevX = 0; //Previous X,Y position on mouse move
     this.prevY = 0;
 
-    this.onUpHandler = function (e: MouseEvent) {
-      oThis.onMouseUp(e);
+    this.onUpHandler = function () {
+      oThis.onMouseUp();
     }; //Cache func reference that gets bound and unbound a lot
-    this.onMoveHandler = function (e: MouseEvent) {
+    this.onMoveHandler = function (e) {
       oThis.onMouseMove(e);
     };
 
     this.canvas.addEventListener("mousedown", function (e) {
       oThis.onMouseDown(e);
     }); //Initializes the up and move events
-    this.canvas.addEventListener("mousewheel", function (e) {
+    this.canvas.addEventListener("wheel", function (e) {
       oThis.onMouseWheel(e);
     }); //Handles zoom/forward movement
   }
@@ -146,13 +146,13 @@ class CameraController {
   }
 
   //End listening for dragging movement
-  onMouseUp(e) {
+  onMouseUp() {
     this.canvas.removeEventListener("mouseup", this.onUpHandler);
     this.canvas.removeEventListener("mousemove", this.onMoveHandler);
   }
 
-  onMouseWheel(e: MouseEvent) {
-    const delta = Math.max(-1, Math.min(1, e.wheelDelta || -e.detail)); //Try to map wheel movement to a number between -1 and 1
+  onMouseWheel(e: WheelEvent) {
+    const delta = Math.max(-1, Math.min(1, e.deltaY || -e.detail)); //Try to map wheel movement to a number between -1 and 1
     this.camera.panZ(delta * (this.zoomRate / this.canvas.height)); //Keep the movement speed the same, no matter the height diff
   }
 

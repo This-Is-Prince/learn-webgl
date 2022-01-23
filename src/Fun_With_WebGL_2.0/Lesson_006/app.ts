@@ -6,46 +6,28 @@ import { RenderLoop } from "./utils/RenderLoop";
 import { WebGL2Context } from "./lib";
 import { Modal } from "./Modal/Modal";
 import { Primitives } from "./primitives/Primitives";
+import { Camera, CameraController } from "./Camera/Camera";
+import { GridAxisShader } from "./utils/Shaders_Extra";
 
 window.addEventListener("load", () => {
   /**
    * Context for drawing
    */
-  const gl = GL.getGLInstance("canvas").fSetSize(500, 500).fClearScreen();
+  const gl = GL.getGLInstance("canvas").fFitScreen(0.95, 0.9).fClearScreen();
+  const gCamera = new Camera(gl);
+  gCamera.transform.position.set(0, 1, 3);
+  const gCameraCtrl = new CameraController(gl, gCamera);
 
-  const gShader = new TestShader(
-    gl,
-    [
-      // Gray
-      0.8, 0.8, 0.8,
-      // Red
-      1, 0, 0,
-      // Green
-      0, 1, 0,
-      // Blue
-      0, 0, 1,
-    ]
-  );
+  const gGridShader = new GridAxisShader(gl, gCamera.projectionMatrix);
+  const gGridModal = Primitives.GridAxis.createModal(gl, true);
 
-  const gModal = new Modal(Primitives.GridAxis.createMesh(gl))
-    .setScale(0.4, 0.4, 0.4)
-    .setRotation(0, 0, 45)
-    .setPosition(0.8, 0.8, 0);
-
-  function onRender(dt: number) {
+  function onRender(_dt: number) {
+    gCamera.updateViewMatrix();
     gl.fClearScreen();
-    const p = gModal.transform.position;
-    const angle = Math.atan2(p.y, p.x) + 1 * dt;
-    const radius = Math.sqrt(p.x * p.x + p.y * p.y);
-    const scale = Math.max(0.2, Math.abs(Math.sin(angle)) * 1.2);
-
-    gShader.activate().renderModal(
-      gModal
-        .setScale(scale, scale / 4, 1)
-        .setPosition(radius * Math.cos(angle), radius * Math.sin(angle), 0)
-        .addRotation(30 * dt, 60 * dt, 15 * dt)
-        .preRender()
-    );
+    gGridShader
+      .activate()
+      .setCameraMatrix(gCamera.viewMatrix)
+      .renderModal(gGridModal.preRender());
   }
   new RenderLoop(onRender).start();
 });

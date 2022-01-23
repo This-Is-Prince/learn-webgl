@@ -139,6 +139,13 @@ class GL {
       return this;
     };
 
+    gl.fFitScreen = function (wp, hp) {
+      return this.fSetSize(
+        window.innerWidth * (wp || 1),
+        window.innerHeight * (hp || 1)
+      );
+    };
+
     return gl;
   }
 }
