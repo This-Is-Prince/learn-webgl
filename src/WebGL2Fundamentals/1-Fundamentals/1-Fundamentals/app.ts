@@ -11,7 +11,14 @@ const startFundamentals = () => {
   const gl = ShaderUtils.getContext("canvas");
 
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
-  ShaderUtils.setSize(gl, 500, 500);
+  const { innerHeight, innerWidth } = window;
+  ShaderUtils.setSize(gl, innerWidth, innerHeight);
+  window.addEventListener("resize", () => {
+    const { innerHeight, innerWidth } = window;
+    ShaderUtils.setSize(gl, innerWidth, innerHeight);
+    gl.uniform2f(u_resolution, innerWidth, innerHeight);
+    draw();
+  });
 
   // Program
   const program = ShaderUtils.getProgramFromText(
@@ -21,7 +28,10 @@ const startFundamentals = () => {
   );
 
   gl.useProgram(program);
-  const vertices = [0, 0, 0, 0.5, 0.5, 0];
+  const vertices = [0, 0, 0, 200, 200, 0];
+
+  const u_resolution = gl.getUniformLocation(program, "u_resolution");
+  gl.uniform2f(u_resolution, innerWidth, innerHeight);
 
   const a_position = gl.getAttribLocation(program, "a_position");
 
@@ -34,6 +44,11 @@ const startFundamentals = () => {
   gl.enableVertexAttribArray(a_position);
   gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 0, 0);
 
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.useProgram(program);
+
+  const draw = () => {
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  };
+  draw();
 };
