@@ -43,4 +43,23 @@ interface Attributes {
   normal: Attribute;
   uv: Attribute;
 }
-export { Attribute, Attributes, MeshData, MeshesData, WebGL2Context };
+
+interface StandardAttribLoc {
+  position: number;
+  norm: number;
+  uv: number;
+  [key: string]: number;
+}
+interface StandardUniformLoc {
+  [key: string]: WebGLUniformLocation;
+}
+
+export {
+  Attribute,
+  Attributes,
+  MeshData,
+  MeshesData,
+  WebGL2Context,
+  StandardAttribLoc,
+  StandardUniformLoc,
+};
