@@ -27,7 +27,7 @@ class Modal {
   addScale(x: number, y: number, z: number) {
     this.transform.scale.x += x;
     this.transform.scale.y += y;
-    this.transform.scale.y += y;
+    this.transform.scale.z += z;
     return this;
   }
   addPosition(x: number, y: number, z: number) {
