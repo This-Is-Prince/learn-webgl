@@ -1,5 +1,17 @@
 import { Mesh } from "./primitives/Mesh";
 
+interface StandardAttribLoc {
+  position: number;
+  norm: number;
+  uv: number;
+}
+interface StandardUniformLoc {
+  perspective: WebGLUniformLocation | null;
+  modalMatrix: WebGLUniformLocation | null;
+  cameraMatrix: WebGLUniformLocation | null;
+  mainTexture: WebGLUniformLocation | null;
+}
+
 interface WebGL2Context extends WebGL2RenderingContext {
   meshes: {
     [key: string]: Mesh;
@@ -22,4 +34,4 @@ interface WebGL2Context extends WebGL2RenderingContext {
   fFitScreen: (wp?: number, hp?: number) => WebGL2Context;
 }
 
-export { WebGL2Context };
+export { WebGL2Context, StandardAttribLoc, StandardUniformLoc };

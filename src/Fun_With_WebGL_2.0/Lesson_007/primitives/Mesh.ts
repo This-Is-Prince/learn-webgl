@@ -48,4 +48,4 @@ class Mesh {
     this.attributes["indices"] = new Uv(buffer);
   }
 }
-export { Mesh };
+export { Mesh, Attribute, Indices, Normals, Uv, Vertices };
