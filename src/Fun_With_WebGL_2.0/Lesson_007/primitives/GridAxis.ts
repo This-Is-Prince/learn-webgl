@@ -80,6 +80,8 @@ class GridAxis {
     if (!mesh.vao) {
       console.error(`unable to create vao for grid`);
     }
+    gl.bindVertexArray(mesh.vao);
+
     const totalComponent = 4;
     const count = vertices.length / totalComponent;
     const stride = Float32Array.BYTES_PER_ELEMENT * totalComponent;
@@ -88,13 +90,12 @@ class GridAxis {
     if (!buffer) {
       console.error(`unable to create buffer for grid`);
     }
-    gl.bindVertexArray(mesh.vao);
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(POSITION_LOCATION);
-    gl.enableVertexAttribArray(COLOR_LOCATION);
-
     gl.vertexAttribPointer(POSITION_LOCATION, 3, gl.FLOAT, false, stride, 0);
+
+    gl.enableVertexAttribArray(COLOR_LOCATION);
     gl.vertexAttribPointer(
       COLOR_LOCATION,
       1,
