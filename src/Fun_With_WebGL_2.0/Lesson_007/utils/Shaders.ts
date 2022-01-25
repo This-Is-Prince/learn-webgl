@@ -231,17 +231,17 @@ class ShaderUtils {
 
     const modalMatrix = gl.getUniformLocation(program, "uMVMatrix");
     if (!modalMatrix) {
-      console.error(`unable to get "uPMatrix" uniform location`);
+      console.error(`unable to get "uMVMatrix" uniform location`);
     }
 
     const cameraMatrix = gl.getUniformLocation(program, "uCameraMatrix");
     if (!cameraMatrix) {
-      console.error(`unable to get "uPMatrix" uniform location`);
+      console.error(`unable to get "uCameraMatrix" uniform location`);
     }
 
     const mainTexture = gl.getUniformLocation(program, "uMainTex");
     if (!mainTexture) {
-      console.error(`unable to get "uPMatrix" uniform location`);
+      console.error(`unable to get "uMainTex" uniform location`);
     }
     return {
       perspective,
