@@ -1,6 +1,7 @@
 import vertexShaderSource from "./shaders/vertex.vs.glsl?raw";
 import fragmentShaderSource from "./shaders/fragment.fs.glsl?raw";
 import { createProgram, createShader } from "../utils";
+import dragonImage from '../../../../static/images/dragon.jpg'
 
 window.addEventListener("load", () => {
   pastingAnImage();
@@ -72,7 +73,7 @@ const pastingAnImage = () => {
   // create an image object
   const image = new Image();
   // tell the browser to load an image
-  image.src = "../../../../static/images/dragon.jpg";
+  image.src = dragonImage;
   // register the event handler to be called on loading an image
   image.addEventListener("load", () => {
     // Flip the image's y axis
