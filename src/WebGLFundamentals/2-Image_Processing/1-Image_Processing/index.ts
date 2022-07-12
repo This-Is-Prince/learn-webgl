@@ -1,12 +1,13 @@
 import ImageLoader from "../../0-Helpers/loaders/imageLoader";
 import vertexShaderSource from "./shaders/vertex.vs.glsl?raw";
 import fragmentShaderSource from "./shaders/fragment.fs.glsl?raw";
+import dragonImage from '../../../../static/images/dragon.jpg'
 
 /**
  * Image Loader
  */
 const loader = new ImageLoader();
-loader.load("../../../../static/images/dragon.jpg", (image) => {
+loader.load(dragonImage, (image) => {
   render(image);
 });
 
