@@ -8,6 +8,12 @@ type Mat4 = [
   [number, number, number, number],
   [number, number, number, number]
 ];
+
+type Mat3 = [
+  [number, number, number],
+  [number, number, number],
+  [number, number, number]
+];
 const m4 = {
   orthographicProjection: (
     left: number,
